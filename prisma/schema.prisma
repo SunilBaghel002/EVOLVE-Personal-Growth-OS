@@ -1,0 +1,233 @@
+// EVOLVE — Prisma Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  applications  Application[]
+  dsaProblems   DSAProblem[]
+  dailyLogs     DailyLog[]
+  challengeDays ChallengeDay[]
+  mernTopics    MERNTopic[]
+  weeklyGoals   WeeklyGoal[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Application {
+  id            String    @id @default(cuid())
+  userId        String
+  companyName   String
+  role          String
+  platform      String    @default("Direct")
+  jobUrl        String?
+  location      String?
+  salaryRange   String?
+  contactPerson String?
+  contactEmail  String?
+  usedReferral  Boolean   @default(false)
+  status        String    @default("APPLIED")
+  appliedDate   DateTime  @default(now())
+  followUpDate  DateTime?
+  notes         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interviews         Interview[]
+  interviewQuestions InterviewQuestion[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([appliedDate])
+}
+
+model Interview {
+  id            String    @id @default(cuid())
+  applicationId String
+  roundName     String
+  roundNumber   Int       @default(1)
+  scheduledAt   DateTime?
+  completedAt   DateTime?
+  status        String    @default("SCHEDULED")
+  feedback      String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  application Application         @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  questions   InterviewQuestion[]
+
+  @@index([applicationId])
+}
+
+model InterviewQuestion {
+  id            String   @id @default(cuid())
+  applicationId String?
+  interviewId   String?
+  question      String   @db.Text
+  category      String   @default("DSA")
+  difficulty    String   @default("MEDIUM")
+  answer        String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  interview   Interview?   @relation(fields: [interviewId], references: [id], onDelete: SetNull)
+}
+
+model DSAProblem {
+  id               String    @id @default(cuid())
+  userId           String
+  title            String
+  problemUrl       String?
+  platform         String    @default("LeetCode")
+  topic            String
+  difficulty       String    @default("EASY")
+  timeTakenMinutes Int?
+  confidence       Int       @default(3)
+  notes            String?   @db.Text
+  solvedDate       DateTime  @default(now())
+  nextRevisionDate DateTime?
+  revisedCount     Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([topic])
+  @@index([difficulty])
+  @@index([nextRevisionDate])
+}
+
+model DailyLog {
+  id               String   @id @default(cuid())
+  userId           String
+  date             DateTime
+  gateHours        Float    @default(0)
+  interviewHours   Float    @default(0)
+  projectHours     Float    @default(0)
+  mernHours        Float    @default(0)
+  totalHours       Float    @default(0)
+  exerciseDone     Boolean  @default(false)
+  whatWentWell     String?  @db.Text
+  whatWentWrong    String?  @db.Text
+  blockers         String?  @db.Text
+  tomorrowPriority String?  @db.Text
+  energyLevel      Int?
+  focusLevel       Int?
+  moodRating       Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([date])
+}
+
+model ChallengeDay {
+  id            String   @id @default(cuid())
+  userId        String
+  dayNumber     Int
+  date          DateTime
+  targetHours   Float    @default(11)
+  achievedHours Float    @default(0)
+  targetApps    Int      @default(5)
+  achievedApps  Int      @default(0)
+  targetDSA     Int      @default(2)
+  achievedDSA   Int      @default(0)
+  completed     Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dayNumber])
+  @@index([dayNumber])
+}
+
+model MERNTopic {
+  id            String    @id @default(cuid())
+  userId        String?
+  category      String
+  title         String
+  completed     Boolean   @default(false)
+  confidence    Int       @default(1)
+  notes         String?   @db.Text
+  lastRevisedAt DateTime?
+  order         Int       @default(0)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, order])
+  @@index([category])
+}
+
+model WeeklyGoal {
+  id                String   @id @default(cuid())
+  userId            String
+  weekNumber        Int
+  startDate         DateTime
+  endDate           DateTime
+  studyHoursTarget  Float    @default(77)
+  appsTarget        Int      @default(35)
+  dsaTarget         Int      @default(15)
+  mernTopicsTarget  Int      @default(5)
+  achieved          Boolean  @default(false)
+  notes             String?  @db.Text
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
