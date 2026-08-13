@@ -208,6 +208,7 @@ model MERNTopic {
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  @@unique([userId, order])
   @@index([category])
 }
 

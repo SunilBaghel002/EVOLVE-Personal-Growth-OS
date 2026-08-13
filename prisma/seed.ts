@@ -45,13 +45,23 @@ async function main() {
       email: 'sunilbaghel002@gmail.com',
     },
   })
-  console.log(`✅ User verified: ${user.name} (${user.email})`)
+  console.log('✅ User verified successfully.')
 
   // 2. Seed 21 MERN Topics
   console.log('📦 Seeding 21 MERN Revision Topics...')
   for (const topic of MERN_TOPICS) {
-    await prisma.mERNTopic.create({
-      data: {
+    await prisma.mERNTopic.upsert({
+      where: {
+        userId_order: {
+          userId: user.id,
+          order: topic.order,
+        },
+      },
+      update: {
+        category: topic.category,
+        title: topic.title,
+      },
+      create: {
         userId: user.id,
         category: topic.category,
         title: topic.title,
@@ -61,7 +71,7 @@ async function main() {
       },
     })
   }
-  console.log('✅ 21 MERN Revision Topics created.')
+  console.log('✅ 21 MERN Revision Topics processed.')
 
   // 3. Seed 21 Challenge Days (Aug 12 - Sep 2, 2026)
   console.log('📅 Seeding 21 Challenge Days...')
