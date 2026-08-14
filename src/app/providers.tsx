@@ -1,6 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 
 interface ProvidersProps {
   children: ReactNode
@@ -8,8 +9,8 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       {children}
-    </>
+    </ThemeProvider>
   )
 }

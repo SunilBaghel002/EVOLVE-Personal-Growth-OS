@@ -108,22 +108,27 @@ export function ApplicationModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl max-h-[90vh] bg-neutral-900 border border-neutral-800 rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="app-modal-title"
+        className="w-full max-w-2xl max-h-[90vh] bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl flex flex-col shadow-2xl overflow-hidden"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-neutral-800">
           <div>
-            <h2 className="text-base font-bold text-white">
+            <h2 id="app-modal-title" className="text-base font-bold text-slate-900 dark:text-white">
               {initialData ? 'Edit Application' : 'Add New Application'}
             </h2>
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-slate-500 dark:text-neutral-400">
               {initialData ? 'Update application details and pipeline status' : 'Track a new job opportunity in your pipeline'}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition-colors"
+            className="p-1.5 text-slate-400 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>

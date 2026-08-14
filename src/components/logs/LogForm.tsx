@@ -83,11 +83,11 @@ export function LogForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-neutral-900 border border-neutral-800 space-y-6 shadow-xl">
+    <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 space-y-6 shadow-sm">
       {/* Date Header & Target Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-neutral-800">
         <div className="space-y-1">
-          <label htmlFor="log-date-select" className="text-xs font-semibold text-neutral-400 block">
+          <label htmlFor="log-date-select" className="text-xs font-bold text-slate-500 dark:text-neutral-400 block">
             Select Logging Date
           </label>
           <div className="flex items-center gap-2">
@@ -96,10 +96,10 @@ export function LogForm({
               type="date"
               value={selectedDate}
               onChange={(e) => handleDateSelect(e.target.value)}
-              className="px-3 py-1.5 text-sm rounded-lg bg-neutral-800 border border-neutral-700 text-white focus:outline-none focus:border-emerald-500 font-medium"
+              className="px-3 py-1.5 text-sm rounded-xl bg-slate-100 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-bold"
             />
             {selectedDate === getTodayLocalDateString() && (
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                 Today
               </span>
             )}
@@ -107,17 +107,17 @@ export function LogForm({
         </div>
 
         {/* Live Calculated Total Study Hours */}
-        <div className="flex items-center gap-3 bg-neutral-800/80 px-4 py-2 rounded-xl border border-neutral-700/60 self-start sm:self-auto">
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+        <div className="flex items-center gap-3 bg-slate-50 dark:bg-neutral-800/80 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-neutral-700/60 self-start sm:self-auto shadow-xs">
+          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase tracking-wider font-semibold text-neutral-400">
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-neutral-400">
               Total Study Hours
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-bold text-white">{totalStudyHours.toFixed(1)} hrs</span>
-              <span className="text-xs text-neutral-400">/ 11 hrs target</span>
+              <span className="text-xl font-black text-slate-900 dark:text-white">{totalStudyHours.toFixed(1)} hrs</span>
+              <span className="text-xs text-slate-500 dark:text-neutral-400 font-medium">/ 11 hrs target</span>
             </div>
           </div>
         </div>
@@ -125,15 +125,15 @@ export function LogForm({
 
       {/* 4 Study Categories Inputs Grid */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <Flame className="w-3.5 h-3.5 text-amber-400" />
+        <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+          <Flame className="w-3.5 h-3.5 text-amber-500" />
           <span>Study Category Hours</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {/* DSA / Interview Prep */}
-          <div className="p-3.5 rounded-xl bg-neutral-800/50 border border-neutral-800 space-y-1.5">
-            <label htmlFor="interview-hours" className="block text-xs font-semibold text-purple-300">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800/50 border border-slate-200 dark:border-neutral-800 space-y-1.5">
+            <label htmlFor="interview-hours" className="block text-xs font-bold text-purple-700 dark:text-purple-300">
               DSA / Interview (hrs)
             </label>
             <input
@@ -144,13 +144,13 @@ export function LogForm({
               max="24"
               value={formData.interviewHours || 0}
               onChange={(e) => handleChange('interviewHours', parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-1.5 text-sm rounded-lg bg-neutral-900 border border-neutral-700 text-white font-bold focus:outline-none focus:border-purple-500"
+              className="w-full px-3 py-1.5 text-sm rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-purple-500"
             />
           </div>
 
           {/* MERN Stack */}
-          <div className="p-3.5 rounded-xl bg-neutral-800/50 border border-neutral-800 space-y-1.5">
-            <label htmlFor="mern-hours" className="block text-xs font-semibold text-emerald-300">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800/50 border border-slate-200 dark:border-neutral-800 space-y-1.5">
+            <label htmlFor="mern-hours" className="block text-xs font-bold text-emerald-700 dark:text-emerald-300">
               MERN Revision (hrs)
             </label>
             <input
@@ -161,13 +161,13 @@ export function LogForm({
               max="24"
               value={formData.mernHours || 0}
               onChange={(e) => handleChange('mernHours', parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-1.5 text-sm rounded-lg bg-neutral-900 border border-neutral-700 text-white font-bold focus:outline-none focus:border-emerald-500"
+              className="w-full px-3 py-1.5 text-sm rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           {/* CS Core / GATE / Aptitude */}
-          <div className="p-3.5 rounded-xl bg-neutral-800/50 border border-neutral-800 space-y-1.5">
-            <label htmlFor="gate-hours" className="block text-xs font-semibold text-blue-300">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800/50 border border-slate-200 dark:border-neutral-800 space-y-1.5">
+            <label htmlFor="gate-hours" className="block text-xs font-bold text-blue-700 dark:text-blue-300">
               CS Core / Aptitude (hrs)
             </label>
             <input
@@ -178,13 +178,13 @@ export function LogForm({
               max="24"
               value={formData.gateHours || 0}
               onChange={(e) => handleChange('gateHours', parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-1.5 text-sm rounded-lg bg-neutral-900 border border-neutral-700 text-white font-bold focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-1.5 text-sm rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-blue-500"
             />
           </div>
 
           {/* Projects */}
-          <div className="p-3.5 rounded-xl bg-neutral-800/50 border border-neutral-800 space-y-1.5">
-            <label htmlFor="project-hours" className="block text-xs font-semibold text-amber-300">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-neutral-800/50 border border-slate-200 dark:border-neutral-800 space-y-1.5">
+            <label htmlFor="project-hours" className="block text-xs font-bold text-amber-700 dark:text-amber-300">
               Projects & Code (hrs)
             </label>
             <input
@@ -195,7 +195,7 @@ export function LogForm({
               max="24"
               value={formData.projectHours || 0}
               onChange={(e) => handleChange('projectHours', parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-1.5 text-sm rounded-lg bg-neutral-900 border border-neutral-700 text-white font-bold focus:outline-none focus:border-amber-500"
+              className="w-full px-3 py-1.5 text-sm rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500"
             />
           </div>
         </div>
@@ -204,23 +204,23 @@ export function LogForm({
       {/* Habit & Rating Controls Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
         {/* Exercise Habit Toggle */}
-        <div className="p-4 rounded-xl bg-neutral-800/40 border border-neutral-800 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800/40 border border-slate-200 dark:border-neutral-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
               <Dumbbell className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-xs font-bold text-white block">Physical Workout / Exercise</span>
-              <span className="text-[11px] text-neutral-400">Completed 30+ mins workout</span>
+              <span className="text-xs font-bold text-slate-900 dark:text-white block">Physical Workout / Exercise</span>
+              <span className="text-[11px] text-slate-500 dark:text-neutral-400 font-medium">Completed 30+ mins workout</span>
             </div>
           </div>
           <button
             type="button"
             onClick={() => handleChange('exerciseDone', !formData.exerciseDone)}
-            className={`w-6 h-6 rounded-md flex items-center justify-center border transition-colors ${
+            className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-colors ${
               formData.exerciseDone
-                ? 'bg-emerald-500 border-emerald-500 text-neutral-950'
-                : 'bg-neutral-800 border-neutral-700 text-transparent'
+                ? 'bg-emerald-500 border-emerald-500 text-slate-950'
+                : 'bg-white dark:bg-neutral-800 border-slate-300 dark:border-neutral-700 text-transparent'
             }`}
           >
             <Check className="w-4 h-4 stroke-[3]" />
@@ -228,14 +228,14 @@ export function LogForm({
         </div>
 
         {/* 1-5 Ratings Group */}
-        <div className="p-4 rounded-xl bg-neutral-800/40 border border-neutral-800 grid grid-cols-3 gap-2">
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-neutral-800/40 border border-slate-200 dark:border-neutral-800 grid grid-cols-3 gap-2">
           {/* Energy Level */}
           <div className="space-y-1 text-center">
-            <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider block">Energy</span>
+            <span className="text-[10px] font-extrabold text-slate-500 dark:text-neutral-400 uppercase tracking-wider block">Energy</span>
             <select
               value={formData.energyLevel}
               onChange={(e) => handleChange('energyLevel', Number(e.target.value))}
-              className="w-full px-2 py-1 text-xs rounded-lg bg-neutral-900 border border-neutral-700 text-white font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="w-full px-2 py-1 text-xs rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs"
             >
               {[1, 2, 3, 4, 5].map((val) => (
                 <option key={val} value={val}>
@@ -247,11 +247,11 @@ export function LogForm({
 
           {/* Focus Level */}
           <div className="space-y-1 text-center">
-            <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider block">Focus</span>
+            <span className="text-[10px] font-extrabold text-slate-500 dark:text-neutral-400 uppercase tracking-wider block">Focus</span>
             <select
               value={formData.focusLevel}
               onChange={(e) => handleChange('focusLevel', Number(e.target.value))}
-              className="w-full px-2 py-1 text-xs rounded-lg bg-neutral-900 border border-neutral-700 text-white font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="w-full px-2 py-1 text-xs rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs"
             >
               {[1, 2, 3, 4, 5].map((val) => (
                 <option key={val} value={val}>
@@ -263,11 +263,11 @@ export function LogForm({
 
           {/* Mood Rating */}
           <div className="space-y-1 text-center">
-            <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider block">Mood</span>
+            <span className="text-[10px] font-extrabold text-slate-500 dark:text-neutral-400 uppercase tracking-wider block">Mood</span>
             <select
               value={formData.moodRating}
               onChange={(e) => handleChange('moodRating', Number(e.target.value))}
-              className="w-full px-2 py-1 text-xs rounded-lg bg-neutral-900 border border-neutral-700 text-white font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="w-full px-2 py-1 text-xs rounded-lg bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs"
             >
               {[1, 2, 3, 4, 5].map((val) => (
                 <option key={val} value={val}>
@@ -282,8 +282,8 @@ export function LogForm({
       {/* Reflections: What Went Well & Blockers */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="what-went-well" className="block text-xs font-semibold text-neutral-300 mb-1 flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+          <label htmlFor="what-went-well" className="block text-xs font-bold text-slate-700 dark:text-neutral-300 mb-1 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>What Went Well Today</span>
           </label>
           <textarea
@@ -292,13 +292,13 @@ export function LogForm({
             placeholder="e.g. Solved 3 DP problems, completed Next.js API routes."
             value={formData.whatWentWell || ''}
             onChange={(e) => handleChange('whatWentWell', e.target.value)}
-            className="w-full px-3 py-2 text-xs rounded-lg bg-neutral-800 border border-neutral-700 text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 resize-none"
+            className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 resize-none font-medium"
           />
         </div>
 
         <div>
-          <label htmlFor="blockers-input" className="block text-xs font-semibold text-neutral-300 mb-1 flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
+          <label htmlFor="blockers-input" className="block text-xs font-bold text-slate-700 dark:text-neutral-300 mb-1 flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
             <span>Blockers / Distractions</span>
           </label>
           <textarea
@@ -307,15 +307,15 @@ export function LogForm({
             placeholder="e.g. Spent too much time debugging Prisma client."
             value={formData.blockers || ''}
             onChange={(e) => handleChange('blockers', e.target.value)}
-            className="w-full px-3 py-2 text-xs rounded-lg bg-neutral-800 border border-neutral-700 text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 resize-none"
+            className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 resize-none font-medium"
           />
         </div>
       </div>
 
       {/* Tomorrow Priority */}
       <div>
-        <label htmlFor="tomorrow-priority" className="block text-xs font-semibold text-neutral-300 mb-1 flex items-center gap-1.5">
-          <Target className="w-3.5 h-3.5 text-blue-400" />
+        <label htmlFor="tomorrow-priority" className="block text-xs font-bold text-slate-700 dark:text-neutral-300 mb-1 flex items-center gap-1.5">
+          <Target className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <span>Tomorrow&apos;s #1 Priority</span>
         </label>
         <input
@@ -324,7 +324,7 @@ export function LogForm({
           placeholder="e.g. Complete Phase 1.5 MERN Revision checklist."
           value={formData.tomorrowPriority || ''}
           onChange={(e) => handleChange('tomorrowPriority', e.target.value)}
-          className="w-full px-3 py-2 text-xs rounded-lg bg-neutral-800 border border-neutral-700 text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500"
+          className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 font-medium"
         />
       </div>
 
@@ -333,7 +333,7 @@ export function LogForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-neutral-950 font-bold text-xs transition-colors shadow-lg shadow-emerald-500/10 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs transition-all shadow-md shadow-emerald-500/10 disabled:opacity-50"
         >
           {isSubmitting ? (
             <>
