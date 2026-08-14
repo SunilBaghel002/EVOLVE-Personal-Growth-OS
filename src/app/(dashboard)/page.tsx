@@ -1,144 +1,240 @@
-import { Flame, Clock, Briefcase, Brain, ArrowUpRight } from 'lucide-react'
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { Plus, Clock, Flame } from 'lucide-react'
+import { ChallengeBanner } from '@/components/dashboard/ChallengeBanner'
+import { SpacedRepetitionWidget } from '@/components/dashboard/SpacedRepetitionWidget'
+import { RecentApplicationsWidget } from '@/components/dashboard/RecentApplicationsWidget'
+import { MernTopicWidget } from '@/components/dashboard/MernTopicWidget'
+import { UpcomingInterviewsWidget } from '@/components/dashboard/UpcomingInterviewsWidget'
+import { ApplicationModal } from '@/components/applications/ApplicationModal'
+import { DSAModal } from '@/components/dsa/DSAModal'
+import type { JobApplication, DSAProblemEntry, MERNTopicEntry } from '@/types'
+import type { CreateApplicationInput } from '@/lib/validations/application'
+import type { CreateDSAProblemInput } from '@/lib/validations/dsa'
+
+interface DashboardData {
+  challenge: {
+    dayNumber: number
+    achievedHours: number
+    targetHours: number
+    achievedApps: number
+    targetApps: number
+    achievedDSA: number
+    targetDSA: number
+  }
+  dueDSAProblems: DSAProblemEntry[]
+  mernTopicOfDay: MERNTopicEntry | null
+  recentApplications: JobApplication[]
+  upcomingInterviews: JobApplication[]
+}
 
 export default function DashboardPage() {
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Quick Action Modal States
+  const [isAppModalOpen, setIsAppModalOpen] = useState(false)
+  const [isSubmittingApp, setIsSubmittingApp] = useState(false)
+
+  const [isDSAModalOpen, setIsDSAModalOpen] = useState(false)
+  const [isSubmittingDSA, setIsSubmittingDSA] = useState(false)
+
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/dashboard')
+      const result = await res.json()
+
+      if (result.success) {
+        setData(result.data)
+      } else {
+        setError(result.error?.message || 'Failed to load dashboard data')
+      }
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err)
+      setError('Failed to connect to dashboard server')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [fetchDashboardData])
+
+  const handleMarkDSARevised = async (id: string, confidence: number) => {
+    try {
+      await fetch(`/api/dsa/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markRevised: true, confidence }),
+      })
+      fetchDashboardData()
+    } catch (err) {
+      console.error('Failed to mark DSA revised:', err)
+    }
+  }
+
+  const handleSubmitApp = async (formData: CreateApplicationInput) => {
+    setIsSubmittingApp(true)
+    try {
+      const res = await fetch('/api/applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      const result = await res.json()
+
+      if (result.success) {
+        setIsAppModalOpen(false)
+        fetchDashboardData()
+      }
+    } catch (err) {
+      console.error('Failed to save application:', err)
+    } finally {
+      setIsSubmittingApp(false)
+    }
+  }
+
+  const handleSubmitDSA = async (formData: CreateDSAProblemInput) => {
+    setIsSubmittingDSA(true)
+    try {
+      const res = await fetch('/api/dsa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      const result = await res.json()
+
+      if (result.success) {
+        setIsDSAModalOpen(false)
+        fetchDashboardData()
+      }
+    } catch (err) {
+      console.error('Failed to log DSA problem:', err)
+    } finally {
+      setIsSubmittingDSA(false)
+    }
+  }
+
   return (
-    <div className="space-y-8">
-      {/* Hero Header */}
-      <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-neutral-900 via-neutral-900 to-neutral-900/50 border border-neutral-800 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-            <Flame className="w-3.5 h-3.5" />
-            <span>21-Day Evolution Challenge • Day 1</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Good Morning, Sunil ☀️
+    <div className="space-y-6">
+      {/* Header & Quick Action Buttons */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            <span>Welcome Back, Sunil</span>
+            <Flame className="w-5 h-5 text-amber-400 fill-amber-400" />
           </h1>
-          <p className="text-sm text-neutral-400 max-w-xl leading-relaxed">
-            Every hour tracked is progress. Target: 11 hours of focused effort today across GATE, Interview Prep, Client Projects, and MERN.
+          <p className="text-xs text-neutral-400">
+            Sprint Control Center • Track your 11-hour daily target, job applications, and DSA revision.
           </p>
         </div>
-      </div>
 
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Today&apos;s Study</span>
-            <Clock className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">0.0</span>
-            <span className="text-xs text-neutral-500">/ 11.0 hrs</span>
-          </div>
-          <div className="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-emerald-500 h-full w-[0%]" />
-          </div>
-        </div>
+        {/* Quick Actions Bar */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/logs"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 text-xs font-semibold transition-colors"
+          >
+            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Log Study Hours</span>
+          </Link>
 
-        <div className="p-5 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Applications</span>
-            <Briefcase className="w-4 h-4 text-blue-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">0</span>
-            <span className="text-xs text-neutral-500">sent total</span>
-          </div>
-          <p className="text-xs text-neutral-500">Target: 100+ applications</p>
-        </div>
+          <button
+            type="button"
+            onClick={() => setIsAppModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 text-xs font-semibold transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5 text-blue-400" />
+            <span>Add Application</span>
+          </button>
 
-        <div className="p-5 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-xs font-medium uppercase tracking-wider">DSA Solved</span>
-            <Brain className="w-4 h-4 text-purple-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">0</span>
-            <span className="text-xs text-neutral-500">problems</span>
-          </div>
-          <p className="text-xs text-neutral-500">Target: 42+ problems</p>
-        </div>
-
-        <div className="p-5 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-2">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-xs font-medium uppercase tracking-wider">Current Streak</span>
-            <Flame className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white">1</span>
-            <span className="text-xs text-neutral-500">days active</span>
-          </div>
-          <p className="text-xs text-emerald-400 font-medium">Keep the fire burning 🔥</p>
+          <button
+            type="button"
+            onClick={() => setIsDSAModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-neutral-950 text-xs font-bold transition-colors shadow-lg shadow-emerald-500/10"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Log DSA Problem</span>
+          </button>
         </div>
       </div>
 
-      {/* Quick Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
-          href="/applications"
-          className="group p-6 rounded-xl bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all flex flex-col justify-between"
-        >
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
-              <Briefcase className="w-5 h-5" />
-            </div>
-            <h2 className="text-base font-semibold text-white group-hover:text-emerald-400 transition-colors">
-              Application Tracker
-            </h2>
-            <p className="text-xs text-neutral-400">
-              Track job applications, interview rounds, and referral pipelines.
-            </p>
-          </div>
-          <div className="mt-4 inline-flex items-center text-xs font-medium text-blue-400 gap-1 group-hover:translate-x-1 transition-transform">
-            <span>View Tracker</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </div>
-        </Link>
+      {/* Main Content & Banner rendering */}
+      {loading ? (
+        <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 text-center animate-pulse">
+          <p className="text-xs text-neutral-400">Loading sprint metrics...</p>
+        </div>
+      ) : error && !data ? (
+        <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 text-center space-y-3">
+          <p className="text-xs font-semibold text-rose-400">{error}</p>
+          <button
+            type="button"
+            onClick={fetchDashboardData}
+            className="px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      ) : data ? (
+        <>
+          <ChallengeBanner
+            dayNumber={data.challenge.dayNumber}
+            achievedHours={data.challenge.achievedHours}
+            targetHours={data.challenge.targetHours}
+            achievedApps={data.challenge.achievedApps}
+            targetApps={data.challenge.targetApps}
+            achievedDSA={data.challenge.achievedDSA}
+            targetDSA={data.challenge.targetDSA}
+          />
 
-        <Link
-          href="/dsa"
-          className="group p-6 rounded-xl bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all flex flex-col justify-between"
-        >
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
-              <Brain className="w-5 h-5" />
-            </div>
-            <h2 className="text-base font-semibold text-white group-hover:text-emerald-400 transition-colors">
-              DSA Problem Tracker
-            </h2>
-            <p className="text-xs text-neutral-400">
-              Log coding problems with difficulty, topic heatmaps, and confidence ratings.
-            </p>
-          </div>
-          <div className="mt-4 inline-flex items-center text-xs font-medium text-purple-400 gap-1 group-hover:translate-x-1 transition-transform">
-            <span>View Problems</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </div>
-        </Link>
+          {/* Main Widgets Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column (2 Cols) */}
+            <div className="lg:col-span-2 space-y-6">
+              <SpacedRepetitionWidget
+                dueProblems={data.dueDSAProblems}
+                onMarkRevised={handleMarkDSARevised}
+              />
 
-        <Link
-          href="/logs"
-          className="group p-6 rounded-xl bg-neutral-900/60 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all flex flex-col justify-between"
-        >
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
+              <RecentApplicationsWidget
+                applications={data.recentApplications}
+              />
             </div>
-            <h2 className="text-base font-semibold text-white group-hover:text-emerald-400 transition-colors">
-              Daily Reflection Logs
-            </h2>
-            <p className="text-xs text-neutral-400">
-              Log study hours across GATE, Interview, Project, and MERN stack.
-            </p>
+
+            {/* Right Column (1 Col) */}
+            <div className="space-y-6">
+              <MernTopicWidget
+                topic={data.mernTopicOfDay}
+              />
+
+              <UpcomingInterviewsWidget
+                interviews={data.upcomingInterviews}
+              />
+            </div>
           </div>
-          <div className="mt-4 inline-flex items-center text-xs font-medium text-emerald-400 gap-1 group-hover:translate-x-1 transition-transform">
-            <span>Log Today&apos;s Hours</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </div>
-        </Link>
-      </div>
+        </>
+      ) : null}
+
+      {/* Quick Action Modals */}
+      <ApplicationModal
+        isOpen={isAppModalOpen}
+        isSubmitting={isSubmittingApp}
+        onClose={() => setIsAppModalOpen(false)}
+        onSubmit={handleSubmitApp}
+      />
+
+      <DSAModal
+        isOpen={isDSAModalOpen}
+        isSubmitting={isSubmittingDSA}
+        onClose={() => setIsDSAModalOpen(false)}
+        onSubmit={handleSubmitDSA}
+      />
     </div>
   )
 }
