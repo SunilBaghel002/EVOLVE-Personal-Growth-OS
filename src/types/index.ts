@@ -64,3 +64,14 @@ export interface DailyLogEntry {
   moodRating?: number
   createdAt: string
 }
+
+export interface MERNTopicEntry {
+  id: string
+  category: string
+  title: string
+  completed: boolean
+  confidence: number
+  notes?: string
+  order: number
+  lastRevisedAt?: string
+}

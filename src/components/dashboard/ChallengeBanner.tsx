@@ -1,0 +1,121 @@
+'use client'
+
+import { Flame, Clock, Briefcase, Brain } from 'lucide-react'
+
+interface ChallengeBannerProps {
+  dayNumber: number
+  achievedHours: number
+  targetHours: number
+  achievedApps: number
+  targetApps: number
+  achievedDSA: number
+  targetDSA: number
+}
+
+export function ChallengeBanner({
+  dayNumber = 1,
+  achievedHours = 0,
+  targetHours = 11,
+  achievedApps = 0,
+  targetApps = 5,
+  achievedDSA = 0,
+  targetDSA = 2,
+}: ChallengeBannerProps) {
+  const hoursPct = Math.min(100, Math.round((achievedHours / targetHours) * 100))
+  const appsPct = Math.min(100, Math.round((achievedApps / targetApps) * 100))
+  const dsaPct = Math.min(100, Math.round((achievedDSA / targetDSA) * 100))
+
+  return (
+    <div className="relative p-6 rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-900 to-emerald-950/40 border border-neutral-800 space-y-6 shadow-2xl overflow-hidden">
+      {/* Background ambient glow */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Header Info */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-neutral-950 shadow-lg shadow-amber-500/20">
+            <Flame className="w-6 h-6 fill-neutral-950" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
+                21-Day Sprint Challenge
+              </span>
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                ACTIVE
+              </span>
+            </div>
+            <h2 className="text-xl font-extrabold text-white tracking-tight">
+              Day {dayNumber} of 21 — Today&apos;s Performance
+            </h2>
+          </div>
+        </div>
+
+        <div className="text-left sm:text-right">
+          <span className="text-xs text-neutral-400 font-medium">Daily Goal Standard</span>
+          <p className="text-xs font-semibold text-emerald-400">11 hrs study • 5 apps • 2 DSA</p>
+        </div>
+      </div>
+
+      {/* 3 Live Progress Bars */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
+        {/* Study Hours Progress */}
+        <div className="p-4 rounded-xl bg-neutral-900/90 border border-neutral-800 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className="text-neutral-300 flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-emerald-400" />
+              Study Hours
+            </span>
+            <span className="text-emerald-400 font-bold">
+              {achievedHours.toFixed(1)} / {targetHours} hrs
+            </span>
+          </div>
+          <div className="w-full h-2.5 rounded-full bg-neutral-800 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 rounded-full"
+              style={{ width: `${hoursPct}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Job Applications Progress */}
+        <div className="p-4 rounded-xl bg-neutral-900/90 border border-neutral-800 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className="text-neutral-300 flex items-center gap-1.5">
+              <Briefcase className="w-4 h-4 text-blue-400" />
+              Applications
+            </span>
+            <span className="text-blue-400 font-bold">
+              {achievedApps} / {targetApps} apps
+            </span>
+          </div>
+          <div className="w-full h-2.5 rounded-full bg-neutral-800 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500 rounded-full"
+              style={{ width: `${appsPct}%` }}
+            />
+          </div>
+        </div>
+
+        {/* DSA Problems Progress */}
+        <div className="p-4 rounded-xl bg-neutral-900/90 border border-neutral-800 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className="text-neutral-300 flex items-center gap-1.5">
+              <Brain className="w-4 h-4 text-purple-400" />
+              DSA Problems
+            </span>
+            <span className="text-purple-400 font-bold">
+              {achievedDSA} / {targetDSA} solved
+            </span>
+          </div>
+          <div className="w-full h-2.5 rounded-full bg-neutral-800 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-purple-500 to-indigo-400 transition-all duration-500 rounded-full"
+              style={{ width: `${dsaPct}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
