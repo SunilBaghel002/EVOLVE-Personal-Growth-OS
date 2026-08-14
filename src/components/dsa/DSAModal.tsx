@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, Loader2, ExternalLink } from 'lucide-react'
 import { createDSAProblemSchema, type CreateDSAProblemInput } from '@/lib/validations/dsa'
 import { ConfidenceRating } from './ConfidenceRating'
 import { DSA_TOPICS, DSA_DIFFICULTIES } from '@/lib/constants'
+import { toLocalDateString, getTodayLocalDateString } from '@/lib/utils/dsa'
 import type { DSAProblemEntry } from '@/types'
 
 interface DSAModalProps {
@@ -22,6 +23,8 @@ export function DSAModal({
   onClose,
   onSubmit,
 }: DSAModalProps) {
+  const titleInputRef = useRef<HTMLInputElement>(null)
+
   const [formData, setFormData] = useState<CreateDSAProblemInput>({
     title: '',
     problemUrl: '',
@@ -31,7 +34,7 @@ export function DSAModal({
     timeTakenMinutes: 30,
     confidence: 3,
     notes: '',
-    solvedDate: new Date().toISOString().split('T')[0],
+    solvedDate: getTodayLocalDateString(),
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -43,13 +46,13 @@ export function DSAModal({
         problemUrl: initialData.problemUrl || '',
         platform: initialData.platform || 'LeetCode',
         topic: initialData.topic || 'Arrays',
-        difficulty: (initialData.difficulty as 'EASY' | 'MEDIUM' | 'HARD') || 'EASY',
+        difficulty: initialData.difficulty || 'EASY',
         timeTakenMinutes: initialData.timeTakenMinutes !== undefined ? initialData.timeTakenMinutes : 30,
         confidence: initialData.confidence || 3,
         notes: initialData.notes || '',
         solvedDate: initialData.solvedDate
-          ? new Date(initialData.solvedDate).toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0],
+          ? toLocalDateString(initialData.solvedDate)
+          : getTodayLocalDateString(),
       })
     } else {
       setFormData({
@@ -61,11 +64,26 @@ export function DSAModal({
         timeTakenMinutes: 30,
         confidence: 3,
         notes: '',
-        solvedDate: new Date().toISOString().split('T')[0],
+        solvedDate: getTodayLocalDateString(),
       })
     }
     setErrors({})
   }, [initialData, isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    titleInputRef.current?.focus()
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isSubmitting) {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, isSubmitting, onClose])
 
   if (!isOpen) return null
 
@@ -96,11 +114,16 @@ export function DSAModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-xl max-h-[90vh] bg-neutral-900 border border-neutral-800 rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dsa-modal-title"
+        className="w-full max-w-xl max-h-[90vh] bg-neutral-900 border border-neutral-800 rounded-2xl flex flex-col shadow-2xl overflow-hidden"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
           <div>
-            <h2 className="text-base font-bold text-white">
+            <h2 id="dsa-modal-title" className="text-base font-bold text-white">
               {initialData ? 'Edit DSA Problem' : 'Log Solved DSA Problem'}
             </h2>
             <p className="text-xs text-neutral-400">
@@ -120,10 +143,12 @@ export function DSAModal({
         <form onSubmit={handleSubmitForm} className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* Problem Title */}
           <div>
-            <label className="block text-xs font-semibold text-neutral-300 mb-1">
+            <label htmlFor="dsa-title-input" className="block text-xs font-semibold text-neutral-300 mb-1">
               Problem Title / Name <span className="text-red-400">*</span>
             </label>
             <input
+              id="dsa-title-input"
+              ref={titleInputRef}
               type="text"
               placeholder="e.g. Two Sum, Trapping Rain Water, LRU Cache"
               value={formData.title}
@@ -136,10 +161,11 @@ export function DSAModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Topic */}
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">
+              <label htmlFor="dsa-topic-select" className="block text-xs font-semibold text-neutral-300 mb-1">
                 Topic Category <span className="text-red-400">*</span>
               </label>
               <select
+                id="dsa-topic-select"
                 value={formData.topic}
                 onChange={(e) => handleChange('topic', e.target.value)}
                 className="w-full px-3 py-2 text-sm rounded-lg bg-neutral-800 border border-neutral-700 text-white focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
@@ -154,8 +180,9 @@ export function DSAModal({
 
             {/* Difficulty */}
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">Difficulty</label>
+              <label htmlFor="dsa-difficulty-select" className="block text-xs font-semibold text-neutral-300 mb-1">Difficulty</label>
               <select
+                id="dsa-difficulty-select"
                 value={formData.difficulty}
                 onChange={(e) => handleChange('difficulty', e.target.value)}
                 className="w-full px-3 py-2 text-sm rounded-lg bg-neutral-800 border border-neutral-700 text-white focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
@@ -172,8 +199,9 @@ export function DSAModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Platform */}
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">Platform</label>
+              <label htmlFor="dsa-platform-input" className="block text-xs font-semibold text-neutral-300 mb-1">Platform</label>
               <input
+                id="dsa-platform-input"
                 type="text"
                 placeholder="e.g. LeetCode, GFG, Codeforces"
                 value={formData.platform}
@@ -184,8 +212,9 @@ export function DSAModal({
 
             {/* Time Taken */}
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">Time Taken (Minutes)</label>
+              <label htmlFor="dsa-timetaken-input" className="block text-xs font-semibold text-neutral-300 mb-1">Time Taken (Minutes)</label>
               <input
+                id="dsa-timetaken-input"
                 type="number"
                 min="0"
                 max="300"
@@ -199,11 +228,12 @@ export function DSAModal({
 
           {/* Problem Link */}
           <div>
-            <label className="block text-xs font-semibold text-neutral-300 mb-1 flex items-center justify-between">
+            <label htmlFor="dsa-url-input" className="block text-xs font-semibold text-neutral-300 mb-1 flex items-center justify-between">
               <span>Problem Link / URL</span>
               <ExternalLink className="w-3 h-3 text-neutral-500" />
             </label>
             <input
+              id="dsa-url-input"
               type="text"
               placeholder="https://leetcode.com/problems/two-sum/"
               value={formData.problemUrl || ''}
@@ -214,11 +244,11 @@ export function DSAModal({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-            {/* Confidence Rating */}
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold text-neutral-300">
+            {/* Confidence Rating Group */}
+            <fieldset className="space-y-1">
+              <legend className="block text-xs font-semibold text-neutral-300">
                 Confidence Rating (1-5 Stars) <span className="text-red-400">*</span>
-              </label>
+              </legend>
               <div className="flex items-center gap-3 pt-1">
                 <ConfidenceRating
                   value={formData.confidence}
@@ -234,12 +264,13 @@ export function DSAModal({
                 {formData.confidence === 4 && 'Revise in 10 days (Comfortable)'}
                 {formData.confidence === 5 && 'Revise in 20 days (Mastered)'}
               </p>
-            </div>
+            </fieldset>
 
             {/* Solved Date */}
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">Solved Date</label>
+              <label htmlFor="dsa-date-input" className="block text-xs font-semibold text-neutral-300 mb-1">Solved Date</label>
               <input
+                id="dsa-date-input"
                 type="date"
                 value={formData.solvedDate || ''}
                 onChange={(e) => handleChange('solvedDate', e.target.value)}
@@ -250,8 +281,9 @@ export function DSAModal({
 
           {/* Approach & Notes */}
           <div>
-            <label className="block text-xs font-semibold text-neutral-300 mb-1">Approach & Key Learnings</label>
+            <label htmlFor="dsa-notes-input" className="block text-xs font-semibold text-neutral-300 mb-1">Approach & Key Learnings</label>
             <textarea
+              id="dsa-notes-input"
               rows={3}
               placeholder="e.g. Used HashMap for O(N) time complexity. Corner case: duplicate values."
               value={formData.notes || ''}

@@ -13,8 +13,16 @@ interface RouteParams {
 // GET /api/dsa/[id] - Fetch single DSA problem
 export async function GET(req: Request, { params }: RouteParams) {
   try {
-    const problem = await prisma.dSAProblem.findUnique({
-      where: { id: params.id },
+    const user = await prisma.user.findFirst()
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
+        { status: 404 }
+      )
+    }
+
+    const problem = await prisma.dSAProblem.findFirst({
+      where: { id: params.id, userId: user.id },
     })
 
     if (!problem) {
@@ -40,21 +48,29 @@ export async function GET(req: Request, { params }: RouteParams) {
 // PATCH /api/dsa/[id] - Update problem or mark revised
 export async function PATCH(req: Request, { params }: RouteParams) {
   try {
+    const user = await prisma.user.findFirst()
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
+        { status: 404 }
+      )
+    }
+
     const body = await req.json()
+
+    const existingProblem = await prisma.dSAProblem.findFirst({
+      where: { id: params.id, userId: user.id },
+    })
+
+    if (!existingProblem) {
+      return NextResponse.json(
+        { success: false, error: { code: 'NOT_FOUND', message: 'DSA problem not found' } },
+        { status: 404 }
+      )
+    }
 
     // Handle special "markRevised" quick action
     if (body.markRevised) {
-      const existingProblem = await prisma.dSAProblem.findUnique({
-        where: { id: params.id },
-      })
-
-      if (!existingProblem) {
-        return NextResponse.json(
-          { success: false, error: { code: 'NOT_FOUND', message: 'DSA problem not found' } },
-          { status: 404 }
-        )
-      }
-
       const newConfidence = body.confidence !== undefined ? Number(body.confidence) : existingProblem.confidence
       const nextRevDate = calculateNextRevision(new Date(), newConfidence)
 
@@ -76,17 +92,6 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     // Standard update flow
     const validatedData = updateDSAProblemSchema.parse(body)
 
-    const existingProblem = await prisma.dSAProblem.findUnique({
-      where: { id: params.id },
-    })
-
-    if (!existingProblem) {
-      return NextResponse.json(
-        { success: false, error: { code: 'NOT_FOUND', message: 'DSA problem not found' } },
-        { status: 404 }
-      )
-    }
-
     const updatePayload: Record<string, unknown> = {}
 
     if (validatedData.title !== undefined) updatePayload.title = validatedData.title
@@ -100,13 +105,16 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     if (validatedData.confidence !== undefined) updatePayload.confidence = validatedData.confidence
     if (validatedData.notes !== undefined) updatePayload.notes = validatedData.notes || null
 
-    const solvedDateObj = validatedData.solvedDate
-      ? new Date(validatedData.solvedDate)
-      : existingProblem.solvedDate
-    const finalConfidence = validatedData.confidence ?? existingProblem.confidence
+    // Only recalculate nextRevisionDate if solvedDate or confidence was explicitly passed in update
+    if (validatedData.solvedDate !== undefined || validatedData.confidence !== undefined) {
+      const solvedDateObj = validatedData.solvedDate
+        ? new Date(validatedData.solvedDate)
+        : existingProblem.solvedDate
+      const finalConfidence = validatedData.confidence ?? existingProblem.confidence
 
-    updatePayload.solvedDate = solvedDateObj
-    updatePayload.nextRevisionDate = calculateNextRevision(solvedDateObj, finalConfidence)
+      updatePayload.solvedDate = solvedDateObj
+      updatePayload.nextRevisionDate = calculateNextRevision(solvedDateObj, finalConfidence)
+    }
 
     const updatedProblem = await prisma.dSAProblem.update({
       where: { id: params.id },
@@ -137,8 +145,16 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 // DELETE /api/dsa/[id] - Delete DSA problem
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
-    const existingProblem = await prisma.dSAProblem.findUnique({
-      where: { id: params.id },
+    const user = await prisma.user.findFirst()
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
+        { status: 404 }
+      )
+    }
+
+    const existingProblem = await prisma.dSAProblem.findFirst({
+      where: { id: params.id, userId: user.id },
     })
 
     if (!existingProblem) {

@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 
 interface DSADeleteModalProps {
@@ -17,17 +18,41 @@ export function DSADeleteModal({
   onClose,
   onConfirm,
 }: DSADeleteModalProps) {
+  const confirmBtnRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    confirmBtnRef.current?.focus()
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isDeleting) {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, isDeleting, onClose])
+
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md p-6 rounded-2xl bg-neutral-900 border border-neutral-800 space-y-5 shadow-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-dsa-title"
+        className="w-full max-w-md p-6 rounded-2xl bg-neutral-900 border border-neutral-800 space-y-5 shadow-2xl"
+      >
         <div className="flex items-center gap-3 text-red-400">
           <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">Delete DSA Problem</h3>
+            <h3 id="delete-dsa-title" className="text-base font-bold text-white">
+              Delete DSA Problem
+            </h3>
             <p className="text-xs text-neutral-400">This action cannot be undone.</p>
           </div>
         </div>
@@ -46,6 +71,7 @@ export function DSADeleteModal({
             Cancel
           </button>
           <button
+            ref={confirmBtnRef}
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}

@@ -34,3 +34,33 @@ export function calculateNextRevision(solvedDate: Date, confidence: number): Dat
   nextDate.setDate(nextDate.getDate() + daysToAdd)
   return nextDate
 }
+
+/**
+ * Returns YYYY-MM-DD string using local calendar date (avoids UTC offset shifts)
+ */
+export function toLocalDateString(dateInput?: Date | string | null): string {
+  if (!dateInput) return ''
+  const d = new Date(dateInput)
+  if (isNaN(d.getTime())) return ''
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+/**
+ * Returns today's YYYY-MM-DD in local time
+ */
+export function getTodayLocalDateString(): string {
+  return toLocalDateString(new Date())
+}
+
+/**
+ * Checks if a problem is due for revision based on local calendar date comparison
+ */
+export function isDueForRevision(nextRevisionDate?: Date | string | null): boolean {
+  if (!nextRevisionDate) return false
+  const targetStr = toLocalDateString(nextRevisionDate)
+  const todayStr = getTodayLocalDateString()
+  return targetStr <= todayStr
+}

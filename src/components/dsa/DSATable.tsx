@@ -3,6 +3,7 @@
 import { ExternalLink, Edit2, Trash2, CheckCircle2, Clock, Calendar, AlertCircle } from 'lucide-react'
 import { DifficultyBadge } from './DifficultyBadge'
 import { ConfidenceRating } from './ConfidenceRating'
+import { isDueForRevision, toLocalDateString } from '@/lib/utils/dsa'
 import type { DSAProblemEntry } from '@/types'
 
 interface DSATableProps {
@@ -27,8 +28,6 @@ export function DSATable({
     )
   }
 
-  const todayStr = new Date().toISOString().split('T')[0]
-
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-neutral-800 bg-neutral-900/80">
       <table className="w-full text-left text-xs">
@@ -45,25 +44,9 @@ export function DSATable({
         </thead>
         <tbody className="divide-y divide-neutral-800/80">
           {problems.map((prob) => {
-            const formattedSolvedDate = new Date(prob.solvedDate).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })
-
-            let formattedNextRevDate = '—'
-            let isDue = false
-
-            if (prob.nextRevisionDate) {
-              const revDateObj = new Date(prob.nextRevisionDate)
-              const revDateStr = revDateObj.toISOString().split('T')[0]
-              isDue = revDateStr <= todayStr
-
-              formattedNextRevDate = revDateObj.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              })
-            }
+            const formattedSolvedDate = toLocalDateString(prob.solvedDate) || '—'
+            const isDue = isDueForRevision(prob.nextRevisionDate)
+            const formattedNextRevDate = toLocalDateString(prob.nextRevisionDate) || '—'
 
             return (
               <tr key={prob.id} className="hover:bg-neutral-800/40 transition-colors group">

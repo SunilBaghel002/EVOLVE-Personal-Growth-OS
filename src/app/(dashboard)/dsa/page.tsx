@@ -1,22 +1,27 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Plus, Search, Filter, Brain, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react'
 import { DSATable } from '@/components/dsa/DSATable'
 import { DSAModal } from '@/components/dsa/DSAModal'
 import { DSADeleteModal } from '@/components/dsa/DSADeleteModal'
 import { TopicHeatmap } from '@/components/dsa/TopicHeatmap'
 import { DSA_TOPICS, DSA_DIFFICULTIES } from '@/lib/constants'
+import { isDueForRevision } from '@/lib/utils/dsa'
 import type { DSAProblemEntry } from '@/types'
 import type { CreateDSAProblemInput } from '@/lib/validations/dsa'
 
 export default function DSAPage() {
-  const [problems, setProblems] = useState<DSAProblemEntry[]>([])
+  const [allProblems, setAllProblems] = useState<DSAProblemEntry[]>([])
+  const [filteredProblems, setFilteredProblems] = useState<DSAProblemEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [selectedTopic, setSelectedTopic] = useState('ALL')
   const [selectedDifficulty, setSelectedDifficulty] = useState('ALL')
   const [dueOnly, setDueOnly] = useState(false)
+
+  // Track latest request to prevent stale async race conditions
+  const requestIdRef = useRef(0)
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -29,24 +34,40 @@ export default function DSAPage() {
   const [isDeleting, setIsDeleting] = useState(false)
 
   const fetchProblems = useCallback(async () => {
+    const currentRequestId = ++requestIdRef.current
     setLoading(true)
     try {
+      // Always fetch full list for metrics & heatmap
+      const allRes = await fetch('/api/dsa')
+      const allResult = await allRes.json()
+
+      if (currentRequestId !== requestIdRef.current) return
+
+      if (allResult.success) {
+        setAllProblems(allResult.data)
+      }
+
+      // Fetch filtered list for table
       const params = new URLSearchParams()
       if (search) params.append('search', search)
       if (selectedTopic && selectedTopic !== 'ALL') params.append('topic', selectedTopic)
       if (selectedDifficulty && selectedDifficulty !== 'ALL') params.append('difficulty', selectedDifficulty)
       if (dueOnly) params.append('dueRevision', 'true')
 
-      const res = await fetch(`/api/dsa?${params.toString()}`)
-      const result = await res.json()
+      const filteredRes = await fetch(`/api/dsa?${params.toString()}`)
+      const filteredResult = await filteredRes.json()
 
-      if (result.success) {
-        setProblems(result.data)
+      if (currentRequestId !== requestIdRef.current) return
+
+      if (filteredResult.success) {
+        setFilteredProblems(filteredResult.data)
       }
     } catch (err) {
       console.error('Failed to fetch DSA problems:', err)
     } finally {
-      setLoading(false)
+      if (currentRequestId === requestIdRef.current) {
+        setLoading(false)
+      }
     }
   }, [search, selectedTopic, selectedDifficulty, dueOnly])
 
@@ -127,15 +148,12 @@ export default function DSAPage() {
     }
   }
 
-  // Metrics
-  const todayStr = new Date().toISOString().split('T')[0]
-  const totalSolved = problems.length
-  const easyCount = problems.filter((p) => p.difficulty === 'EASY').length
-  const mediumCount = problems.filter((p) => p.difficulty === 'MEDIUM').length
-  const hardCount = problems.filter((p) => p.difficulty === 'HARD').length
-  const dueCount = problems.filter(
-    (p) => p.nextRevisionDate && new Date(p.nextRevisionDate).toISOString().split('T')[0] <= todayStr
-  ).length
+  // Unfiltered Metrics
+  const totalSolved = allProblems.length
+  const easyCount = allProblems.filter((p) => p.difficulty === 'EASY').length
+  const mediumCount = allProblems.filter((p) => p.difficulty === 'MEDIUM').length
+  const hardCount = allProblems.filter((p) => p.difficulty === 'HARD').length
+  const dueCount = allProblems.filter((p) => isDueForRevision(p.nextRevisionDate)).length
 
   return (
     <div className="space-y-6">
@@ -157,7 +175,7 @@ export default function DSAPage() {
         </button>
       </div>
 
-      {/* Metrics Row */}
+      {/* Metrics Row (Unfiltered Overall Progress) */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div className="p-4 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-1">
           <div className="flex items-center justify-between text-neutral-400">
@@ -224,9 +242,9 @@ export default function DSAPage() {
         </div>
       )}
 
-      {/* Topic Heatmap Overview */}
+      {/* Topic Heatmap Overview (Renders using allProblems for accurate total topic distribution) */}
       <TopicHeatmap
-        problems={problems}
+        problems={allProblems}
         selectedTopic={selectedTopic}
         onSelectTopic={(t) => setSelectedTopic(t)}
       />
@@ -296,7 +314,7 @@ export default function DSAPage() {
         </div>
       ) : (
         <DSATable
-          problems={problems}
+          problems={filteredProblems}
           onEdit={handleOpenEditModal}
           onDelete={handleOpenDeleteModal}
           onMarkRevised={handleMarkRevised}
