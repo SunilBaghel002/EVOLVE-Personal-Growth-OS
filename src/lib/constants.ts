@@ -44,6 +44,17 @@ export const APPLICATION_PLATFORMS = [
   'Other',
 ] as const
 
+// DSA Platforms
+export const DSA_PLATFORMS = [
+  'LeetCode',
+  'GeeksforGeeks',
+  'CodeChef',
+  'Codeforces',
+  'HackerRank',
+  'InterviewBit',
+  'Other',
+] as const
+
 // DSA Difficulty Levels
 export const DSA_DIFFICULTIES = ['EASY', 'MEDIUM', 'HARD'] as const
 

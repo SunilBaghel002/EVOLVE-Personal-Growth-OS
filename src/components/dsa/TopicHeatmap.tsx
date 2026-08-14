@@ -31,17 +31,17 @@ export function TopicHeatmap({
   const maxCount = Math.max(...Object.values(topicCounts), 1)
 
   return (
-    <div className="p-5 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-4">
+    <div className="p-5 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-bold text-white tracking-tight">Topic Coverage & Progress</h3>
-          <p className="text-xs text-neutral-400">Distribution of solved problems across DSA learning topics</p>
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Topic Coverage & Progress</h3>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">Distribution of solved problems across DSA learning topics</p>
         </div>
         {selectedTopic !== 'ALL' && (
           <button
             type="button"
             onClick={() => onSelectTopic && onSelectTopic('ALL')}
-            className="text-[11px] text-emerald-400 hover:underline font-semibold"
+            className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold"
           >
             Clear topic filter
           </button>
@@ -59,10 +59,10 @@ export function TopicHeatmap({
               key={topic}
               type="button"
               onClick={() => onSelectTopic && onSelectTopic(isSelected ? 'ALL' : topic)}
-              className={`p-3 rounded-lg border text-left transition-all relative overflow-hidden group ${
+              className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden group ${
                 isSelected
-                  ? 'bg-neutral-800 border-emerald-500/80 shadow-md shadow-emerald-500/10'
-                  : 'bg-neutral-900/60 hover:bg-neutral-800/80 border-neutral-800 hover:border-neutral-700'
+                  ? 'bg-emerald-50/80 dark:bg-neutral-800 border-emerald-500 shadow-sm'
+                  : 'bg-slate-50/80 dark:bg-neutral-900/60 hover:bg-slate-100 dark:hover:bg-neutral-800/80 border-slate-200 dark:border-neutral-800 hover:border-slate-300 dark:hover:border-neutral-700'
               }`}
             >
               {/* Background progress fill */}
@@ -72,13 +72,13 @@ export function TopicHeatmap({
               />
 
               <div className="relative z-10 flex flex-col justify-between h-full space-y-1">
-                <span className="text-xs font-semibold text-neutral-200 truncate group-hover:text-white">
+                <span className="text-xs font-bold text-slate-900 dark:text-neutral-200 truncate group-hover:text-emerald-700 dark:group-hover:text-white">
                   {topic}
                 </span>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-bold text-emerald-400">{count} solved</span>
+                  <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">{count} solved</span>
                   {count === 0 && (
-                    <span className="text-[10px] text-neutral-600 font-medium">Needs focus</span>
+                    <span className="text-[10px] text-slate-400 dark:text-neutral-600 font-semibold">Needs focus</span>
                   )}
                 </div>
               </div>

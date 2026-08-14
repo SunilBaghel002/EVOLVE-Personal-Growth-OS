@@ -126,11 +126,11 @@ export default function DashboardPage() {
       {/* Header & Quick Action Buttons */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <span>Welcome Back, Sunil</span>
-            <Flame className="w-5 h-5 text-amber-400 fill-amber-400" />
+            <Flame className="w-5 h-5 text-amber-500 fill-amber-500" />
           </h1>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-slate-500 dark:text-neutral-400">
             Sprint Control Center • Track your 11-hour daily target, job applications, and DSA revision.
           </p>
         </div>
@@ -139,25 +139,25 @@ export default function DashboardPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/logs"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200 text-xs font-bold transition-all shadow-xs"
           >
-            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+            <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>Log Study Hours</span>
           </Link>
 
           <button
             type="button"
             onClick={() => setIsAppModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold transition-all shadow-xs"
           >
-            <Plus className="w-3.5 h-3.5 text-blue-400" />
+            <Plus className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>Add Application</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsDSAModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-neutral-950 text-xs font-bold transition-colors shadow-lg shadow-emerald-500/10"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-neutral-950 text-xs font-bold transition-all shadow-md shadow-emerald-500/10"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Log DSA Problem</span>

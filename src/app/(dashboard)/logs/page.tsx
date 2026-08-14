@@ -105,21 +105,21 @@ export default function LogsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight">Daily Time & Habit Logger</h1>
-          <p className="text-xs text-neutral-400">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Daily Time & Habit Logger</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">
             Log your daily 11-hour study breakdown across DSA, MERN, CS Core, and Projects.
           </p>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-neutral-900 p-1 rounded-xl border border-neutral-800 self-start sm:self-auto">
+        <div className="flex items-center gap-1 bg-white dark:bg-neutral-900 p-1 rounded-xl border border-slate-200 dark:border-neutral-800 self-start sm:self-auto shadow-sm">
           <button
             type="button"
             onClick={() => setActiveTab('form')}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'form'
-                ? 'bg-emerald-500 text-neutral-950 shadow-md'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-emerald-500 text-slate-950 shadow-md'
+                : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <PenTool className="w-3.5 h-3.5" />
@@ -130,8 +130,8 @@ export default function LogsPage() {
             onClick={() => setActiveTab('history')}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'history'
-                ? 'bg-emerald-500 text-neutral-950 shadow-md'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-emerald-500 text-slate-950 shadow-md'
+                : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <History className="w-3.5 h-3.5" />
@@ -142,36 +142,36 @@ export default function LogsPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-1">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[10px] font-semibold uppercase tracking-wider">Avg Daily Study</span>
-            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider">Avg Daily Study</span>
+            <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <p className="text-xl font-bold text-white">{avgHoursPerDay} hrs/day</p>
+          <p className="text-xl font-black text-slate-900 dark:text-white">{avgHoursPerDay} hrs/day</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-1">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[10px] font-semibold uppercase tracking-wider">Target Met (11h+)</span>
-            <Award className="w-3.5 h-3.5 text-amber-400" />
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider">Target Met (11h+)</span>
+            <Award className="w-3.5 h-3.5 text-amber-500" />
           </div>
-          <p className="text-xl font-bold text-amber-400">{daysTargetMet} days</p>
+          <p className="text-xl font-black text-amber-600 dark:text-amber-400">{daysTargetMet} days</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-1">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[10px] font-semibold uppercase tracking-wider">Total Hours Logged</span>
-            <Flame className="w-3.5 h-3.5 text-purple-400" />
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider">Total Hours Logged</span>
+            <Flame className="w-3.5 h-3.5 text-purple-500" />
           </div>
-          <p className="text-xl font-bold text-purple-300">{totalHoursLogged.toFixed(1)} hrs</p>
+          <p className="text-xl font-black text-purple-700 dark:text-purple-300">{totalHoursLogged.toFixed(1)} hrs</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-1">
-          <div className="flex items-center justify-between text-neutral-400">
-            <span className="text-[10px] font-semibold uppercase tracking-wider">Workouts Completed</span>
-            <Dumbbell className="w-3.5 h-3.5 text-blue-400" />
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider">Workouts Completed</span>
+            <Dumbbell className="w-3.5 h-3.5 text-blue-500" />
           </div>
-          <p className="text-xl font-bold text-blue-400">{totalWorkouts} sessions</p>
+          <p className="text-xl font-black text-blue-600 dark:text-blue-400">{totalWorkouts} sessions</p>
         </div>
       </div>
 
@@ -186,8 +186,8 @@ export default function LogsPage() {
       ) : (
         <div>
           {loading ? (
-            <div className="p-12 text-center rounded-xl bg-neutral-900/60 border border-neutral-800">
-              <p className="text-xs text-neutral-400 animate-pulse">Loading daily log history...</p>
+            <div className="p-12 text-center rounded-2xl bg-white dark:bg-neutral-900/60 border border-slate-200 dark:border-neutral-800 shadow-sm">
+              <p className="text-xs text-slate-500 dark:text-neutral-400 animate-pulse">Loading daily log history...</p>
             </div>
           ) : (
             <LogHistoryTable
