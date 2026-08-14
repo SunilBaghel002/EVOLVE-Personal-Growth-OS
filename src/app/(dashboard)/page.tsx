@@ -33,6 +33,7 @@ interface DashboardData {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   // Quick Action Modal States
   const [isAppModalOpen, setIsAppModalOpen] = useState(false)
@@ -43,15 +44,19 @@ export default function DashboardPage() {
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/dashboard')
       const result = await res.json()
 
       if (result.success) {
         setData(result.data)
+      } else {
+        setError(result.error?.message || 'Failed to load dashboard data')
       }
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err)
+      setError('Failed to connect to dashboard server')
     } finally {
       setLoading(false)
     }
@@ -160,48 +165,61 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Challenge Day Sprint Banner */}
-      {loading || !data ? (
+      {/* Main Content & Banner rendering */}
+      {loading ? (
         <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 text-center animate-pulse">
           <p className="text-xs text-neutral-400">Loading sprint metrics...</p>
         </div>
-      ) : (
-        <ChallengeBanner
-          dayNumber={data.challenge.dayNumber}
-          achievedHours={data.challenge.achievedHours}
-          targetHours={data.challenge.targetHours}
-          achievedApps={data.challenge.achievedApps}
-          targetApps={data.challenge.targetApps}
-          achievedDSA={data.challenge.achievedDSA}
-          targetDSA={data.challenge.targetDSA}
-        />
-      )}
-
-      {/* Main Widgets Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column (2 Cols) */}
-        <div className="lg:col-span-2 space-y-6">
-          <SpacedRepetitionWidget
-            dueProblems={data?.dueDSAProblems || []}
-            onMarkRevised={handleMarkDSARevised}
-          />
-
-          <RecentApplicationsWidget
-            applications={data?.recentApplications || []}
-          />
+      ) : error && !data ? (
+        <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 text-center space-y-3">
+          <p className="text-xs font-semibold text-rose-400">{error}</p>
+          <button
+            type="button"
+            onClick={fetchDashboardData}
+            className="px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition-colors"
+          >
+            Retry
+          </button>
         </div>
-
-        {/* Right Column (1 Col) */}
-        <div className="space-y-6">
-          <MernTopicWidget
-            topic={data?.mernTopicOfDay || null}
+      ) : data ? (
+        <>
+          <ChallengeBanner
+            dayNumber={data.challenge.dayNumber}
+            achievedHours={data.challenge.achievedHours}
+            targetHours={data.challenge.targetHours}
+            achievedApps={data.challenge.achievedApps}
+            targetApps={data.challenge.targetApps}
+            achievedDSA={data.challenge.achievedDSA}
+            targetDSA={data.challenge.targetDSA}
           />
 
-          <UpcomingInterviewsWidget
-            interviews={data?.upcomingInterviews || []}
-          />
-        </div>
-      </div>
+          {/* Main Widgets Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column (2 Cols) */}
+            <div className="lg:col-span-2 space-y-6">
+              <SpacedRepetitionWidget
+                dueProblems={data.dueDSAProblems}
+                onMarkRevised={handleMarkDSARevised}
+              />
+
+              <RecentApplicationsWidget
+                applications={data.recentApplications}
+              />
+            </div>
+
+            {/* Right Column (1 Col) */}
+            <div className="space-y-6">
+              <MernTopicWidget
+                topic={data.mernTopicOfDay}
+              />
+
+              <UpcomingInterviewsWidget
+                interviews={data.upcomingInterviews}
+              />
+            </div>
+          </div>
+        </>
+      ) : null}
 
       {/* Quick Action Modals */}
       <ApplicationModal

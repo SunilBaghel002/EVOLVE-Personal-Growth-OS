@@ -16,10 +16,12 @@ export async function GET() {
 
     const todayStr = getTodayLocalDateString()
     const todayDateObj = new Date(`${todayStr}T00:00:00.000Z`)
+    const tomorrowDateObj = new Date(todayDateObj)
+    tomorrowDateObj.setDate(tomorrowDateObj.getDate() + 1)
 
     // 1. Calculate Challenge Day Number (Aug 12 - Sep 2)
     const startDateObj = new Date(CHALLENGE_START_DATE)
-    const diffTime = Math.abs(todayDateObj.getTime() - startDateObj.getTime())
+    const diffTime = todayDateObj.getTime() - startDateObj.getTime()
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1
     const currentDayNumber = Math.min(Math.max(diffDays, 1), 21)
 
@@ -37,8 +39,9 @@ export async function GET() {
     const todayAppsCount = await prisma.application.count({
       where: {
         userId: user.id,
-        createdAt: {
+        appliedDate: {
           gte: todayDateObj,
+          lt: tomorrowDateObj,
         },
       },
     })
@@ -49,6 +52,7 @@ export async function GET() {
         userId: user.id,
         solvedDate: {
           gte: todayDateObj,
+          lt: tomorrowDateObj,
         },
       },
     })
