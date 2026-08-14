@@ -112,7 +112,7 @@ export default function LogsPage() {
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-white dark:bg-neutral-900 p-1 rounded-xl border border-slate-200 dark:border-neutral-800 self-start sm:self-auto shadow-xs">
+        <div className="flex items-center gap-1 bg-white dark:bg-neutral-900 p-1 rounded-xl border border-slate-200 dark:border-neutral-800 self-start sm:self-auto shadow-sm">
           <button
             type="button"
             onClick={() => setActiveTab('form')}
@@ -142,7 +142,7 @@ export default function LogsPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Avg Daily Study</span>
             <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -150,7 +150,7 @@ export default function LogsPage() {
           <p className="text-xl font-black text-slate-900 dark:text-white">{avgHoursPerDay} hrs/day</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Target Met (11h+)</span>
             <Award className="w-3.5 h-3.5 text-amber-500" />
@@ -158,7 +158,7 @@ export default function LogsPage() {
           <p className="text-xl font-black text-amber-600 dark:text-amber-400">{daysTargetMet} days</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Total Hours Logged</span>
             <Flame className="w-3.5 h-3.5 text-purple-500" />
@@ -166,7 +166,7 @@ export default function LogsPage() {
           <p className="text-xl font-black text-purple-700 dark:text-purple-300">{totalHoursLogged.toFixed(1)} hrs</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Workouts Completed</span>
             <Dumbbell className="w-3.5 h-3.5 text-blue-500" />

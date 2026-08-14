@@ -50,7 +50,7 @@ export default function DSAPage() {
       if (search) params.append('search', search)
       if (selectedTopic && selectedTopic !== 'ALL') params.append('topic', selectedTopic)
       if (selectedDifficulty && selectedDifficulty !== 'ALL') params.append('difficulty', selectedDifficulty)
-      if (dueOnly) params.append('dueOnly', 'true')
+      if (dueOnly) params.append('dueRevision', 'true')
 
       const filteredRes = await fetch(`/api/dsa?${params.toString()}`)
       const filteredResult = await filteredRes.json()
@@ -186,7 +186,7 @@ export default function DSAPage() {
 
       {/* Metrics Row (Unfiltered Overall Progress) */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Total Solved</span>
             <Brain className="w-3.5 h-3.5 text-purple-500" />
@@ -194,7 +194,7 @@ export default function DSAPage() {
           <p className="text-xl font-black text-slate-900 dark:text-white">{totalSolved}</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Easy</span>
             <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
@@ -202,7 +202,7 @@ export default function DSAPage() {
           <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">{easyCount}</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Medium</span>
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
@@ -210,7 +210,7 @@ export default function DSAPage() {
           <p className="text-xl font-black text-amber-600 dark:text-amber-400">{mediumCount}</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Hard</span>
             <Sparkles className="w-3.5 h-3.5 text-rose-500" />
@@ -218,7 +218,7 @@ export default function DSAPage() {
           <p className="text-xl font-black text-rose-600 dark:text-red-400">{hardCount}</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 col-span-2 sm:col-span-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-neutral-900/80 border border-slate-200 dark:border-neutral-800 space-y-1 col-span-2 sm:col-span-1 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-neutral-400">
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Due Revision</span>
             <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
@@ -229,7 +229,7 @@ export default function DSAPage() {
 
       {/* Spaced Repetition Due Alert Banner */}
       {dueCount > 0 && (
-        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
               <AlertCircle className="w-5 h-5" />
@@ -244,7 +244,7 @@ export default function DSAPage() {
           <button
             type="button"
             onClick={() => setDueOnly(!dueOnly)}
-            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition-all self-start sm:self-auto whitespace-nowrap shadow-xs"
+            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition-all self-start sm:self-auto whitespace-nowrap shadow-sm"
           >
             {dueOnly ? 'Show All Problems' : 'View Due Problems'}
           </button>
@@ -267,7 +267,7 @@ export default function DSAPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search problem title, platform, or notes..."
-            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 font-medium transition-all shadow-xs"
+            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 font-medium transition-all shadow-sm"
           />
         </div>
 
@@ -277,7 +277,7 @@ export default function DSAPage() {
             <select
               value={selectedTopic}
               onChange={(e) => setSelectedTopic(e.target.value)}
-              className="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-all cursor-pointer shadow-xs"
+              className="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-all cursor-pointer shadow-sm"
             >
               <option value="ALL">All Topics</option>
               {DSA_TOPICS.map((topic) => (
@@ -291,7 +291,7 @@ export default function DSAPage() {
           <select
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-all cursor-pointer shadow-xs"
+            className="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-all cursor-pointer shadow-sm"
           >
             <option value="ALL">All Difficulties</option>
             {DSA_DIFFICULTIES.map((diff) => (
@@ -304,7 +304,7 @@ export default function DSAPage() {
           <button
             type="button"
             onClick={() => setDueOnly(!dueOnly)}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all shadow-xs ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all shadow-sm ${
               dueOnly
                 ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/40'
                 : 'bg-white dark:bg-neutral-900 text-slate-700 dark:text-neutral-400 border-slate-200 dark:border-neutral-800 hover:text-slate-900 dark:hover:text-white'

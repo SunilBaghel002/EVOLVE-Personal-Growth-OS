@@ -103,8 +103,9 @@ export function ApplicationTable({
                     <StatusBadge status={app.status} />
                     <select
                       value={app.status}
+                      aria-label="Change application status"
                       onChange={(e) => onQuickStatusChange(app.id, e.target.value as ApplicationStatus)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 text-slate-800 dark:text-neutral-300 text-[11px] font-semibold rounded-lg px-2 py-0.5 focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs"
+                      className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity bg-white dark:bg-neutral-800 border border-slate-300 dark:border-neutral-700 text-slate-800 dark:text-neutral-300 text-[11px] font-semibold rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer shadow-sm"
                     >
                       {APPLICATION_STATUSES.map((st) => (
                         <option key={st} value={st}>

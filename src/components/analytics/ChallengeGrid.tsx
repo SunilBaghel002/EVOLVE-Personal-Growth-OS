@@ -2,7 +2,7 @@
 
 import { CheckCircle2, Clock, Briefcase, Brain, Calendar } from 'lucide-react'
 
-interface ChallengeDayItem {
+export interface ChallengeDayItem {
   id: string
   dayNumber: number
   date: string | Date
@@ -50,6 +50,7 @@ export function ChallengeGrid({ days, onSelectDay }: ChallengeGridProps) {
           const dateStr = new Date(day.date).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
+            timeZone: 'UTC',
           })
 
           const isFullyMet = day.completed
@@ -69,7 +70,7 @@ export function ChallengeGrid({ days, onSelectDay }: ChallengeGridProps) {
               key={day.id || day.dayNumber}
               type="button"
               onClick={() => onSelectDay && onSelectDay(day)}
-              className={`p-3.5 rounded-2xl border text-left transition-all duration-200 shadow-xs flex flex-col justify-between space-y-2 relative overflow-hidden group ${statusClass}`}
+              className={`p-3.5 rounded-2xl border text-left transition-all duration-200 shadow-sm flex flex-col justify-between space-y-2 relative overflow-hidden group ${statusClass}`}
             >
               {day.isToday && (
                 <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-emerald-500 text-slate-950 text-[9px] font-black uppercase tracking-wider">

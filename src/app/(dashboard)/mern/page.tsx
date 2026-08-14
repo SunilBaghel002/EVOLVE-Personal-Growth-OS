@@ -63,11 +63,16 @@ export default function MERNPage() {
         })
       }
 
-      await fetch(`/api/mern/${id}`, {
+      const res = await fetch(`/api/mern/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed }),
       })
+
+      if (!res.ok) {
+        throw new Error('Failed to update topic status')
+      }
+
       fetchMERNData()
     } catch (err) {
       console.error('Failed to update topic status:', err)
@@ -85,11 +90,15 @@ export default function MERNPage() {
         })
       }
 
-      await fetch(`/api/mern/${id}`, {
+      const res = await fetch(`/api/mern/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ confidence }),
       })
+
+      if (!res.ok) {
+        throw new Error('Failed to update confidence level')
+      }
     } catch (err) {
       console.error('Failed to update confidence level:', err)
       fetchMERNData()
@@ -121,7 +130,7 @@ export default function MERNPage() {
         </div>
 
         {/* Overall Completion Pill */}
-        <div className="flex items-center gap-3 bg-white dark:bg-neutral-900 px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-neutral-800 shadow-xs self-start sm:self-auto">
+        <div className="flex items-center gap-3 bg-white dark:bg-neutral-900 px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-neutral-800 shadow-sm self-start sm:self-auto">
           <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
             <BookOpenCheck className="w-5 h-5" />
           </div>
@@ -162,7 +171,7 @@ export default function MERNPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search MERN topics, concepts, or your revision notes..."
-            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 font-medium transition-all shadow-xs"
+            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500 font-medium transition-all shadow-sm"
           />
         </div>
 
@@ -174,7 +183,7 @@ export default function MERNPage() {
                 key={cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-2 text-xs font-bold rounded-xl border transition-all shadow-xs ${
+                className={`px-3 py-2 text-xs font-bold rounded-xl border transition-all shadow-sm ${
                   isSelected
                     ? 'bg-emerald-500 text-slate-950 border-emerald-500'
                     : 'bg-white dark:bg-neutral-900 text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-neutral-800 hover:text-slate-900 dark:hover:text-white'

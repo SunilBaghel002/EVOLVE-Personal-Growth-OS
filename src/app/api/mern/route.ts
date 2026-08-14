@@ -34,21 +34,19 @@ const DEFAULT_MERN_TOPICS = [
   { category: 'Node', title: 'Memory Management, Garbage Collection & Leak Debugging', order: 21 },
 ]
 
-// GET /api/mern - Fetch all MERN topics for the current user
+// GET /api/mern - Fetch all MERN topics for the authenticated user
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const category = searchParams.get('category')
     const search = searchParams.get('search') || ''
 
-    let user = await prisma.user.findFirst()
+    const user = await prisma.user.findFirst()
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          name: 'Sunil Baghel',
-          email: 'sunilbaghel002@gmail.com',
-        },
-      })
+      return NextResponse.json(
+        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
+        { status: 404 }
+      )
     }
 
     let topics = await prisma.mERNTopic.findMany({
@@ -56,20 +54,19 @@ export async function GET(req: Request) {
       orderBy: { order: 'asc' },
     })
 
-    // Auto-seed topics if user has no MERN topics yet
+    // Auto-seed default topics if user has no MERN topics yet (atomic & idempotent createMany)
     if (topics.length === 0) {
-      for (const t of DEFAULT_MERN_TOPICS) {
-        await prisma.mERNTopic.create({
-          data: {
-            userId: user.id,
-            category: t.category,
-            title: t.title,
-            order: t.order,
-            completed: false,
-            confidence: 1,
-          },
-        })
-      }
+      await prisma.mERNTopic.createMany({
+        data: DEFAULT_MERN_TOPICS.map((t) => ({
+          userId: user.id,
+          category: t.category,
+          title: t.title,
+          order: t.order,
+          completed: false,
+          confidence: 1,
+        })),
+        skipDuplicates: true,
+      })
 
       topics = await prisma.mERNTopic.findMany({
         where: { userId: user.id },

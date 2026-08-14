@@ -37,14 +37,14 @@ export function MERNTopicCard({
   const catStyle = categoryColorMap[topic.category] || categoryColorMap['MongoDB']
 
   const formattedLastRevised = topic.lastRevisedAt
-    ? new Date(topic.lastRevisedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    ? new Date(topic.lastRevisedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
     : null
 
   return (
     <div
       className={`p-4 rounded-2xl border transition-all duration-200 ${
         topic.completed
-          ? 'bg-slate-50/60 dark:bg-neutral-900/40 border-emerald-500/40 dark:border-emerald-500/30 shadow-xs'
+          ? 'bg-slate-50/60 dark:bg-neutral-900/40 border-emerald-500/40 dark:border-emerald-500/30 shadow-sm'
           : 'bg-white dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 shadow-sm'
       }`}
     >
@@ -54,9 +54,11 @@ export function MERNTopicCard({
           <button
             type="button"
             onClick={() => onToggleComplete(topic.id, !topic.completed)}
+            aria-label={topic.completed ? `Mark ${topic.title} as incomplete` : `Mark ${topic.title} as completed`}
+            aria-pressed={topic.completed}
             className={`mt-0.5 w-5 h-5 rounded-lg flex items-center justify-center border transition-all shrink-0 ${
               topic.completed
-                ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-xs'
+                ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-sm'
                 : 'bg-white dark:bg-neutral-800 border-slate-300 dark:border-neutral-700 text-transparent hover:border-emerald-500'
             }`}
           >
@@ -127,7 +129,7 @@ export function MERNTopicCard({
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">Notes</span>
+            <span className="hidden sm:inline">Notes</span>
             {isNotesOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>
         </div>

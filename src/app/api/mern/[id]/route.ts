@@ -23,8 +23,16 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       )
     }
 
-    const existingTopic = await prisma.mERNTopic.findUnique({
-      where: { id },
+    const user = await prisma.user.findFirst()
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
+        { status: 404 }
+      )
+    }
+
+    const existingTopic = await prisma.mERNTopic.findFirst({
+      where: { id, userId: user.id },
     })
 
     if (!existingTopic) {
@@ -52,7 +60,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 
     const updatedTopic = await prisma.mERNTopic.update({
-      where: { id },
+      where: { id: existingTopic.id },
       data: updateData,
     })
 

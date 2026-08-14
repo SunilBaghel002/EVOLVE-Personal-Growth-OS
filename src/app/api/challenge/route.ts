@@ -5,14 +5,12 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    let user = await prisma.user.findFirst()
+    const user = await prisma.user.findFirst()
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          name: 'Sunil Baghel',
-          email: 'sunilbaghel002@gmail.com',
-        },
-      })
+      return NextResponse.json(
+        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
+        { status: 404 }
+      )
     }
 
     const startDateObj = new Date('2026-08-12T00:00:00.000Z')
