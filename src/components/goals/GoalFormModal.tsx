@@ -12,7 +12,7 @@ interface GoalFormModalProps {
 }
 
 export function GoalFormModal({ currentGoal, isOpen, onClose, onSaved }: GoalFormModalProps) {
-  const [weekNumber, setWeekNumber] = useState(currentGoal.weekNumber)
+  const weekNumber = currentGoal.weekNumber
   const [studyHoursTarget, setStudyHoursTarget] = useState(currentGoal.studyHoursTarget)
   const [appsTarget, setAppsTarget] = useState(currentGoal.appsTarget)
   const [dsaTarget, setDsaTarget] = useState(currentGoal.dsaTarget)

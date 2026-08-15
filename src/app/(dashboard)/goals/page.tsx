@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Target, RefreshCw, AlertTriangle, Calendar, PlusCircle } from 'lucide-react'
+import { RefreshCw, AlertTriangle, Calendar, PlusCircle } from 'lucide-react'
 import { CurrentGoalCard, type WeeklyGoalItem, type GoalActuals } from '@/components/goals/CurrentGoalCard'
 import { GoalFormModal } from '@/components/goals/GoalFormModal'
 import { HistoricalGoalsList } from '@/components/goals/HistoricalGoalsList'
