@@ -12,7 +12,7 @@ export function Header() {
   })
 
   return (
-    <header className="h-16 border-b border-slate-200 dark:border-neutral-800 bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-sm sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between shadow-xs">
+    <header className="h-16 border-b border-slate-200 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between shadow-xs">
       <div className="flex items-center gap-3">
         <div>
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">Sunil Baghel</h2>
