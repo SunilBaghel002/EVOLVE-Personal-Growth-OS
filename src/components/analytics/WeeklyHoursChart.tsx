@@ -41,7 +41,6 @@ interface CustomTooltipProps {
 
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
-    const dataItem = payload[0]
     return (
       <div className="p-3 bg-slate-900 border border-slate-700/80 rounded-xl shadow-xl text-xs space-y-1">
         <p className="font-bold text-white mb-1">{label}</p>

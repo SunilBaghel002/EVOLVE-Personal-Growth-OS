@@ -1,7 +1,7 @@
 'use client'
 
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts'
-import { Briefcase, CheckCircle2, ArrowRight } from 'lucide-react'
+import { Briefcase, ArrowRight } from 'lucide-react'
 
 export interface FunnelStageItem {
   stage: string
