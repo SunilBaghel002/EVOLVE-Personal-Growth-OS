@@ -9,6 +9,7 @@ import { CategoryDistributionChart, type CategoryDistributionItem } from '@/comp
 import { ApplicationFunnelChart, type FunnelStageItem } from '@/components/analytics/ApplicationFunnelChart'
 import { PlatformEffectivenessChart, type PlatformEffectivenessItem } from '@/components/analytics/PlatformEffectivenessChart'
 import { DSATopicHeatmap, type DSATopicCoverageItem } from '@/components/analytics/DSATopicHeatmap'
+import { CHALLENGE_START_DATE, CHALLENGE_END_DATE, TOTAL_CHALLENGE_DAYS } from '@/lib/constants'
 
 interface ChallengeMetrics {
   totalHoursLogged: number
@@ -34,6 +35,14 @@ interface AnalyticsChartsData {
   dsaTopicCoverage: DSATopicCoverageItem[]
 }
 
+const formatDateRangeString = (startStr: string, endStr: string): string => {
+  const start = new Date(`${startStr}T00:00:00.000Z`)
+  const end = new Date(`${endStr}T00:00:00.000Z`)
+  const startFormatted = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+  const endFormatted = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+  return `${startFormatted} - ${endFormatted}`
+}
+
 export default function AnalyticsPage() {
   const [challengeDays, setChallengeDays] = useState<ChallengeDayItem[]>([])
   const [metrics, setMetrics] = useState<ChallengeMetrics | null>(null)
@@ -46,9 +55,14 @@ export default function AnalyticsPage() {
     setLoading(true)
     setError(null)
     try {
+      const challengeDateQuery = new URLSearchParams({
+        startDate: CHALLENGE_START_DATE,
+        endDate: CHALLENGE_END_DATE,
+      }).toString()
+
       const [challengeRes, analyticsRes] = await Promise.all([
-        fetch('/api/challenge'),
-        fetch('/api/analytics'),
+        fetch(`/api/challenge?${challengeDateQuery}`),
+        fetch(`/api/analytics?${challengeDateQuery}`),
       ])
 
       const challengeJson = await challengeRes.json()
@@ -79,12 +93,14 @@ export default function AnalyticsPage() {
     fetchAnalyticsData()
   }, [fetchAnalyticsData])
 
+  const challengePeriodText = formatDateRangeString(CHALLENGE_START_DATE, CHALLENGE_END_DATE)
+
   if (loading) {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">21-Day Challenge Progress & Analytics</h1>
-          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and visual performance analytics for Aug 12 - Sep 2, 2026.</p>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{TOTAL_CHALLENGE_DAYS}-Day Challenge Progress & Analytics</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and visual performance analytics for {challengePeriodText}.</p>
         </div>
         <div className="p-16 text-center rounded-2xl bg-white dark:bg-neutral-900/60 border border-slate-200 dark:border-neutral-800 shadow-sm space-y-3">
           <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
@@ -98,8 +114,8 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">21-Day Challenge Progress & Analytics</h1>
-          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and visual performance analytics for Aug 12 - Sep 2, 2026.</p>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{TOTAL_CHALLENGE_DAYS}-Day Challenge Progress & Analytics</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and visual performance analytics for {challengePeriodText}.</p>
         </div>
         <div className="p-8 text-center rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 space-y-4 shadow-sm">
           <div className="w-12 h-12 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
@@ -131,9 +147,9 @@ export default function AnalyticsPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">21-Day Challenge Progress & Analytics</h1>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{TOTAL_CHALLENGE_DAYS}-Day Challenge Progress & Analytics</h1>
           <p className="text-xs text-slate-500 dark:text-neutral-400">
-            Real-time performance tracking and visual intelligence for Sunil&apos;s 21-Day Transformation Challenge (Aug 12 - Sep 2, 2026).
+            Real-time performance tracking and visual intelligence for Sunil&apos;s {TOTAL_CHALLENGE_DAYS}-Day Transformation Challenge ({challengePeriodText}).
           </p>
         </div>
 
@@ -145,13 +161,13 @@ export default function AnalyticsPage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-black text-slate-900 dark:text-white">
-                {metrics?.totalDaysCompleted || 0} / 21 Days Perfect
+                {metrics?.totalDaysCompleted || 0} / {TOTAL_CHALLENGE_DAYS} Days Perfect
               </span>
               <span className="text-[11px] font-extrabold text-amber-600 dark:text-amber-400">
-                ({Math.round(((metrics?.totalDaysCompleted || 0) / 21) * 100)}%)
+                ({Math.round(((metrics?.totalDaysCompleted || 0) / TOTAL_CHALLENGE_DAYS) * 100)}%)
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 dark:text-neutral-500 font-bold">Aug 12 — Sep 2 Target Timeline</p>
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 font-bold">{challengePeriodText} Target Timeline</p>
           </div>
         </div>
       </div>
@@ -173,7 +189,7 @@ export default function AnalyticsPage() {
             <span className="text-2xl font-black text-slate-900 dark:text-white">
               {metrics?.totalHoursLogged.toFixed(1) || 0} <span className="text-xs text-slate-500 dark:text-neutral-400 font-normal">hrs</span>
             </span>
-            <span className="text-xs text-slate-400 dark:text-neutral-500 font-bold">/ 231 hrs target</span>
+            <span className="text-xs text-slate-400 dark:text-neutral-500 font-bold">/ {metrics?.targetHoursTotal || 231} hrs target</span>
           </div>
           <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-neutral-800 overflow-hidden">
             <div className="h-full bg-emerald-500 rounded-full transition-all duration-300" style={{ width: `${hoursPercent}%` }} />
@@ -192,7 +208,7 @@ export default function AnalyticsPage() {
             <span className="text-2xl font-black text-slate-900 dark:text-white">
               {metrics?.totalAppsSubmitted || 0} <span className="text-xs text-slate-500 dark:text-neutral-400 font-normal">apps</span>
             </span>
-            <span className="text-xs text-slate-400 dark:text-neutral-500 font-bold">/ 105 apps target</span>
+            <span className="text-xs text-slate-400 dark:text-neutral-500 font-bold">/ {metrics?.targetAppsTotal || 105} apps target</span>
           </div>
           <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-neutral-800 overflow-hidden">
             <div className="h-full bg-blue-500 rounded-full transition-all duration-300" style={{ width: `${appsPercent}%` }} />
@@ -211,7 +227,7 @@ export default function AnalyticsPage() {
             <span className="text-2xl font-black text-slate-900 dark:text-white">
               {metrics?.totalDSASolved || 0} <span className="text-xs text-slate-500 dark:text-neutral-400 font-normal">problems</span>
             </span>
-            <span className="text-xs text-slate-400 dark:text-neutral-500 font-bold">/ 42 probs target</span>
+            <span className="text-xs text-slate-400 dark:text-neutral-500 font-bold">/ {metrics?.targetDSATotal || 42} probs target</span>
           </div>
           <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-neutral-800 overflow-hidden">
             <div className="h-full bg-purple-500 rounded-full transition-all duration-300" style={{ width: `${dsaPercent}%` }} />

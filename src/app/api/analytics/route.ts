@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getAuthenticatedUser } from '@/lib/auth'
+import { CHALLENGE_START_DATE, TOTAL_CHALLENGE_DAYS } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,17 +22,17 @@ const DEFAULT_DSA_TOPICS = [
 
 export async function GET() {
   try {
-    const user = await prisma.user.findFirst()
+    const user = await getAuthenticatedUser()
     if (!user) {
       return NextResponse.json(
-        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
-        { status: 404 }
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+        { status: 401 }
       )
     }
 
     const userId = user.id
 
-    // Fetch all logs, applications, and DSA problems
+    // Fetch all logs, applications, and DSA problems for caller
     const [logs, applications, dsaProblems] = await Promise.all([
       prisma.dailyLog.findMany({
         where: { userId },
@@ -44,11 +46,11 @@ export async function GET() {
       }),
     ])
 
-    // 1. Weekly / Daily Hours Trend (21 Days)
-    const startDateObj = new Date('2026-08-12T00:00:00.000Z')
+    // 1. Weekly / Daily Hours Trend derived from shared challenge range constants
+    const startDateObj = new Date(`${CHALLENGE_START_DATE}T00:00:00.000Z`)
     const hoursTrend = []
 
-    for (let i = 1; i <= 21; i++) {
+    for (let i = 1; i <= TOTAL_CHALLENGE_DAYS; i++) {
       const dayDate = new Date(startDateObj)
       dayDate.setUTCDate(startDateObj.getUTCDate() + (i - 1))
       const dateStr = dayDate.toISOString().split('T')[0]

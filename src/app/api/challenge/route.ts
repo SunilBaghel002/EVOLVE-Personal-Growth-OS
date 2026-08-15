@@ -1,19 +1,21 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getAuthenticatedUser } from '@/lib/auth'
+import { CHALLENGE_START_DATE, TOTAL_CHALLENGE_DAYS } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const user = await prisma.user.findFirst()
+    const user = await getAuthenticatedUser()
     if (!user) {
       return NextResponse.json(
-        { success: false, error: { code: 'USER_NOT_FOUND', message: 'User not initialized' } },
-        { status: 404 }
+        { success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+        { status: 401 }
       )
     }
 
-    const startDateObj = new Date('2026-08-12T00:00:00.000Z')
+    const startDateObj = new Date(`${CHALLENGE_START_DATE}T00:00:00.000Z`)
 
     // Fetch existing challenge days or initialize 21 days
     let challengeDays = await prisma.challengeDay.findMany({
@@ -21,8 +23,8 @@ export async function GET() {
       orderBy: { dayNumber: 'asc' },
     })
 
-    if (challengeDays.length < 21) {
-      for (let i = 1; i <= 21; i++) {
+    if (challengeDays.length < TOTAL_CHALLENGE_DAYS) {
+      for (let i = 1; i <= TOTAL_CHALLENGE_DAYS; i++) {
         const dayDate = new Date(startDateObj)
         dayDate.setUTCDate(startDateObj.getUTCDate() + (i - 1))
 
@@ -131,11 +133,11 @@ export async function GET() {
         challengeDays: updatedChallengeDays,
         metrics: {
           totalHoursLogged,
-          targetHoursTotal: 21 * 11, // 231 hours
+          targetHoursTotal: TOTAL_CHALLENGE_DAYS * 11, // 231 hours
           totalAppsSubmitted,
-          targetAppsTotal: 21 * 5, // 105 apps
+          targetAppsTotal: TOTAL_CHALLENGE_DAYS * 5, // 105 apps
           totalDSASolved,
-          targetDSATotal: 21 * 2, // 42 DSA problems
+          targetDSATotal: TOTAL_CHALLENGE_DAYS * 2, // 42 DSA problems
           totalDaysCompleted,
           streaks: {
             studyHoursStreak: currentStudyStreak,
