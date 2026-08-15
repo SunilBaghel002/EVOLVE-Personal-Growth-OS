@@ -4,47 +4,71 @@ import { useState, useEffect, useCallback } from 'react'
 import { Clock, Briefcase, Brain, Trophy, AlertTriangle, RefreshCw, X, Calendar, CheckCircle2 } from 'lucide-react'
 import { ChallengeGrid, type ChallengeDayItem } from '@/components/analytics/ChallengeGrid'
 import { StreakCard } from '@/components/analytics/StreakCard'
+import { WeeklyHoursChart, type HoursTrendItem } from '@/components/analytics/WeeklyHoursChart'
+import { CategoryDistributionChart, type CategoryDistributionItem } from '@/components/analytics/CategoryDistributionChart'
+import { ApplicationFunnelChart, type FunnelStageItem } from '@/components/analytics/ApplicationFunnelChart'
+import { PlatformEffectivenessChart, type PlatformEffectivenessItem } from '@/components/analytics/PlatformEffectivenessChart'
+import { DSATopicHeatmap, type DSATopicCoverageItem } from '@/components/analytics/DSATopicHeatmap'
 
-interface AnalyticsData {
-  challengeDays: ChallengeDayItem[]
-  metrics: {
-    totalHoursLogged: number
-    targetHoursTotal: number
-    totalAppsSubmitted: number
-    targetAppsTotal: number
-    totalDSASolved: number
-    targetDSATotal: number
-    totalDaysCompleted: number
-    streaks: {
-      studyHoursStreak: number
-      appsStreak: number
-      dsaStreak: number
-      exerciseStreak: number
-    }
+interface ChallengeMetrics {
+  totalHoursLogged: number
+  targetHoursTotal: number
+  totalAppsSubmitted: number
+  targetAppsTotal: number
+  totalDSASolved: number
+  targetDSATotal: number
+  totalDaysCompleted: number
+  streaks: {
+    studyHoursStreak: number
+    appsStreak: number
+    dsaStreak: number
+    exerciseStreak: number
   }
 }
 
+interface AnalyticsChartsData {
+  hoursTrend: HoursTrendItem[]
+  categoryDistribution: CategoryDistributionItem[]
+  applicationFunnel: FunnelStageItem[]
+  platformEffectiveness: PlatformEffectivenessItem[]
+  dsaTopicCoverage: DSATopicCoverageItem[]
+}
+
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData | null>(null)
+  const [challengeDays, setChallengeDays] = useState<ChallengeDayItem[]>([])
+  const [metrics, setMetrics] = useState<ChallengeMetrics | null>(null)
+  const [chartsData, setChartsData] = useState<AnalyticsChartsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedDay, setSelectedDay] = useState<ChallengeDayItem | null>(null)
 
-  const fetchChallengeData = useCallback(async () => {
+  const fetchAnalyticsData = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/challenge')
-      const result = await res.json()
+      const [challengeRes, analyticsRes] = await Promise.all([
+        fetch('/api/challenge'),
+        fetch('/api/analytics'),
+      ])
 
-      if (!res.ok || !result.success) {
-        setError(result.error?.message || 'Failed to load challenge analytics data')
+      const challengeJson = await challengeRes.json()
+      const analyticsJson = await analyticsRes.json()
+
+      if (!challengeRes.ok || !challengeJson.success) {
+        setError(challengeJson.error?.message || 'Failed to load challenge metrics')
         return
       }
 
-      setData(result.data)
+      if (!analyticsRes.ok || !analyticsJson.success) {
+        setError(analyticsJson.error?.message || 'Failed to load analytics visualizations')
+        return
+      }
+
+      setChallengeDays(challengeJson.data.challengeDays || [])
+      setMetrics(challengeJson.data.metrics || null)
+      setChartsData(analyticsJson.data || null)
     } catch (err) {
-      console.error('Failed to fetch analytics challenge data:', err)
+      console.error('Failed to fetch analytics data:', err)
       setError('A network error occurred while loading analytics data.')
     } finally {
       setLoading(false)
@@ -52,18 +76,19 @@ export default function AnalyticsPage() {
   }, [])
 
   useEffect(() => {
-    fetchChallengeData()
-  }, [fetchChallengeData])
+    fetchAnalyticsData()
+  }, [fetchAnalyticsData])
 
   if (loading) {
     return (
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">21-Day Challenge Progress & Analytics</h1>
-          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and target progress for Aug 12 - Sep 2, 2026.</p>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and visual performance analytics for Aug 12 - Sep 2, 2026.</p>
         </div>
-        <div className="p-12 text-center rounded-2xl bg-white dark:bg-neutral-900/60 border border-slate-200 dark:border-neutral-800 shadow-sm">
-          <p className="text-xs text-slate-500 dark:text-neutral-400 animate-pulse">Loading challenge progress metrics...</p>
+        <div className="p-16 text-center rounded-2xl bg-white dark:bg-neutral-900/60 border border-slate-200 dark:border-neutral-800 shadow-sm space-y-3">
+          <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-semibold text-slate-500 dark:text-neutral-400">Loading performance analytics & charts...</p>
         </div>
       </div>
     )
@@ -74,7 +99,7 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">21-Day Challenge Progress & Analytics</h1>
-          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and target progress for Aug 12 - Sep 2, 2026.</p>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">Live streak tracking and visual performance analytics for Aug 12 - Sep 2, 2026.</p>
         </div>
         <div className="p-8 text-center rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 space-y-4 shadow-sm">
           <div className="w-12 h-12 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
@@ -86,7 +111,7 @@ export default function AnalyticsPage() {
           </div>
           <button
             type="button"
-            onClick={fetchChallengeData}
+            onClick={fetchAnalyticsData}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold text-xs hover:opacity-90 transition-opacity"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -97,19 +122,18 @@ export default function AnalyticsPage() {
     )
   }
 
-  const metrics = data?.metrics
   const hoursPercent = metrics ? Math.min(100, Math.round((metrics.totalHoursLogged / metrics.targetHoursTotal) * 100)) : 0
   const appsPercent = metrics ? Math.min(100, Math.round((metrics.totalAppsSubmitted / metrics.targetAppsTotal) * 100)) : 0
   const dsaPercent = metrics ? Math.min(100, Math.round((metrics.totalDSASolved / metrics.targetDSATotal) * 100)) : 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">21-Day Challenge Progress & Analytics</h1>
           <p className="text-xs text-slate-500 dark:text-neutral-400">
-            Real-time performance tracking for Sunil&apos;s 21-Day Transformation Challenge (Aug 12 - Sep 2, 2026).
+            Real-time performance tracking and visual intelligence for Sunil&apos;s 21-Day Transformation Challenge (Aug 12 - Sep 2, 2026).
           </p>
         </div>
 
@@ -195,10 +219,42 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
+      {/* Chart 1: Weekly Hours Trend Line Chart */}
+      {chartsData?.hoursTrend && <WeeklyHoursChart data={chartsData.hoursTrend} />}
+
+      {/* Chart 2 & 4 Row: Category Distribution (Pie) + Platform Effectiveness (Bar) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {chartsData?.categoryDistribution && (
+          <CategoryDistributionChart
+            data={chartsData.categoryDistribution}
+            totalHours={metrics?.totalHoursLogged || 0}
+          />
+        )}
+        {chartsData?.platformEffectiveness && (
+          <PlatformEffectivenessChart data={chartsData.platformEffectiveness} />
+        )}
+      </div>
+
+      {/* Chart 3: Application Pipeline Funnel Chart */}
+      {chartsData?.applicationFunnel && (
+        <ApplicationFunnelChart
+          data={chartsData.applicationFunnel}
+          totalApplications={metrics?.totalAppsSubmitted || 0}
+        />
+      )}
+
+      {/* Chart 5: DSA Topic Coverage Heatmap */}
+      {chartsData?.dsaTopicCoverage && (
+        <DSATopicHeatmap
+          data={chartsData.dsaTopicCoverage}
+          totalSolved={metrics?.totalDSASolved || 0}
+        />
+      )}
+
       {/* 21-Day Timeline Grid */}
-      {data?.challengeDays && (
+      {challengeDays.length > 0 && (
         <ChallengeGrid
-          days={data.challengeDays}
+          days={challengeDays}
           onSelectDay={(day) => setSelectedDay(day)}
         />
       )}
