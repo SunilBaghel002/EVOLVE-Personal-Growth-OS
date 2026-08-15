@@ -92,10 +92,10 @@ export function WeeklyHoursChart({ data }: WeeklyHoursChartProps) {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.3} />
-            <XAxis dataKey="label" stroke="#64748B" fontSize={11} tickLine={false} />
-            <YAxis stroke="#64748B" fontSize={11} tickLine={false} domain={[0, 16]} />
+            <XAxis dataKey="label" stroke="#64748B" tick={{ fontSize: 11 }} tickLine={false} />
+            <YAxis stroke="#64748B" tick={{ fontSize: 11 }} tickLine={false} domain={[0, 16]} />
             <Tooltip content={<CustomTooltip />} />
-            <ReferenceLine y={11} stroke="#F59E0B" strokeDasharray="4 4" label={{ value: '11h Goal', fill: '#F59E0B', fontSize: 10, position: 'insideTopRight' }} />
+            <ReferenceLine y={11} stroke="#F59E0B" strokeDasharray="4 4" label="11h Goal" />
             <Area
               type="monotone"
               dataKey="totalHours"

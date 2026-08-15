@@ -67,8 +67,8 @@ export function PlatformEffectivenessChart({ data }: PlatformEffectivenessChartP
       <div className="w-full h-60 pt-2">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-            <XAxis dataKey="platform" stroke="#64748B" fontSize={11} tickLine={false} />
-            <YAxis stroke="#64748B" fontSize={11} tickLine={false} allowDecimals={false} />
+            <XAxis dataKey="platform" stroke="#64748B" tick={{ fontSize: 11 }} tickLine={false} />
+            <YAxis stroke="#64748B" tick={{ fontSize: 11 }} tickLine={false} allowDecimals={false} />
             <Tooltip content={<CustomTooltip />} />
             <Legend
               wrapperStyle={{ fontSize: 12, paddingTop: 10 }}
