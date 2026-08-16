@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { RotateCw, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react'
+import { RotateCw, CheckCircle2, ExternalLink } from 'lucide-react'
 
 interface DSAProblemDue {
   id: string

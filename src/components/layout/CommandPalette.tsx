@@ -2,21 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Search,
-  LayoutDashboard,
-  Briefcase,
-  Brain,
-  Clock,
-  BookOpenCheck,
-  BarChart3,
-  Settings,
-  MessageSquareCode,
-  Target,
-  Plus,
-  X,
-  ArrowRight,
-} from 'lucide-react'
+import { Search, X, ArrowRight } from 'lucide-react'
 
 interface CommandPaletteProps {
   isOpen: boolean
