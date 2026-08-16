@@ -167,16 +167,16 @@ export default function DashboardPage() {
 
       {/* Main Content & Banner rendering */}
       {loading ? (
-        <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 text-center animate-pulse">
-          <p className="text-xs text-neutral-400">Loading sprint metrics...</p>
+        <div className="p-8 rounded-2xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-center animate-pulse shadow-sm">
+          <p className="text-xs text-slate-500 dark:text-neutral-400">Loading sprint metrics...</p>
         </div>
       ) : error && !data ? (
-        <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 text-center space-y-3">
-          <p className="text-xs font-semibold text-rose-400">{error}</p>
+        <div className="p-8 rounded-2xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-center space-y-3 shadow-sm">
+          <p className="text-xs font-semibold text-rose-600 dark:text-rose-400">{error}</p>
           <button
             type="button"
             onClick={fetchDashboardData}
-            className="px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold transition-colors"
+            className="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 transition-opacity"
           >
             Retry
           </button>

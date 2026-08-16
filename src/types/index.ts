@@ -43,6 +43,7 @@ export interface DSAProblemEntry {
   notes?: string
   solvedDate: string
   nextRevisionDate?: string
+  revisedCount?: number
   createdAt: string
 }
 

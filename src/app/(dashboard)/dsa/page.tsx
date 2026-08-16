@@ -6,6 +6,7 @@ import { DSATable } from '@/components/dsa/DSATable'
 import { DSAModal } from '@/components/dsa/DSAModal'
 import { DSADeleteModal } from '@/components/dsa/DSADeleteModal'
 import { TopicHeatmap } from '@/components/dsa/TopicHeatmap'
+import { SpacedRepetitionWidget } from '@/components/dsa/SpacedRepetitionWidget'
 import { DSA_TOPICS, DSA_DIFFICULTIES } from '@/lib/constants'
 import { isDueForRevision } from '@/lib/utils/dsa'
 import type { DSAProblemEntry } from '@/types'
@@ -227,29 +228,11 @@ export default function DSAPage() {
         </div>
       </div>
 
-      {/* Spaced Repetition Due Alert Banner */}
-      {dueCount > 0 && (
-        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
-              <AlertCircle className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Spaced Repetition Alert</h3>
-              <p className="text-[11px] text-amber-800 dark:text-amber-300/80 font-medium">
-                You have {dueCount} problem{dueCount > 1 ? 's' : ''} scheduled for revision today based on past confidence ratings.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setDueOnly(!dueOnly)}
-            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition-all self-start sm:self-auto whitespace-nowrap shadow-sm"
-          >
-            {dueOnly ? 'Show All Problems' : 'View Due Problems'}
-          </button>
-        </div>
-      )}
+      {/* Spaced Repetition Engine Widget */}
+      <SpacedRepetitionWidget
+        dueProblems={allProblems.filter((p) => isDueForRevision(p.nextRevisionDate))}
+        onRevisionDone={fetchProblems}
+      />
 
       {/* Topic Heatmap Overview (Renders using allProblems for accurate total topic distribution) */}
       <TopicHeatmap

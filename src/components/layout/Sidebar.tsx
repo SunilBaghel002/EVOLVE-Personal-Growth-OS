@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Briefcase, Brain, Clock, BookOpenCheck, BarChart3, Settings } from 'lucide-react'
+import { LayoutDashboard, Briefcase, Brain, Clock, BookOpenCheck, BarChart3, MessageSquareCode, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { label: 'Daily Logs', href: '/logs', icon: Clock },
   { label: 'MERN Revision', href: '/mern', icon: BookOpenCheck },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { label: 'Interviews', href: '/interviews', icon: MessageSquareCode },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
