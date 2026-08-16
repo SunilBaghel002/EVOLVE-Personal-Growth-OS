@@ -175,6 +175,36 @@ export default function LogsPage() {
         </div>
       </div>
 
+      {/* Missed Target & Reflection Excuse Pattern Card */}
+      {logs.filter((l) => (l.totalHours || 0) < 11 && (l.whatWentWrong || l.blockers)).length > 0 && (
+        <div className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800/80 space-y-2">
+          <h3 className="text-xs font-bold text-white flex items-center gap-2">
+            <Clock className="w-4 h-4 text-rose-400" />
+            Reflection Excuse & Missed Target Log
+          </h3>
+          <p className="text-[11px] text-neutral-400">
+            Recent missed 11h target reflections and blockers recorded:
+          </p>
+          <div className="space-y-1.5 pt-1">
+            {logs
+              .filter((l) => (l.totalHours || 0) < 11 && (l.whatWentWrong || l.blockers))
+              .slice(0, 3)
+              .map((l) => (
+                <div key={l.id} className="p-2.5 rounded-xl bg-neutral-950/80 border border-neutral-800/60 text-xs flex items-start justify-between">
+                  <div>
+                    <span className="font-bold text-rose-400 text-[10px] uppercase block">
+                      {new Date(l.date).toLocaleDateString()} — Logged {l.totalHours}h / 11h target
+                    </span>
+                    <p className="text-neutral-300 text-[11px] mt-0.5">
+                      {l.whatWentWrong || l.blockers}
+                    </p>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
       {/* Main Content Area */}
       {activeTab === 'form' ? (
         <LogForm
